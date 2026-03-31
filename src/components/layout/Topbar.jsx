@@ -6,6 +6,7 @@ export default function Topbar() {
 
   const links = [
     { path: '/', label: 'Home' },
+    { path: '/pnr-status', label: 'PNR Status' },
     { path: '/live-tracking', label: 'Live Status' },
     { path: '/sos', label: 'SOS Emergency' },
   ];

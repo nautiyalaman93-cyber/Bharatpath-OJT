@@ -6,48 +6,58 @@
 import { useState } from 'react';
 import { Button } from '../../components/ui/Button';
 import { Search, User } from 'lucide-react';
+import { api } from '../../services/api';
 
 export default function PNRStatus() {
   const [pnr, setPnr] = useState('1234567890');
   const [isSearching, setIsSearching] = useState(false);
   const [statusData, setStatusData] = useState(null);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     setIsSearching(true);
-    setTimeout(() => {
-      setStatusData(true);
+    setStatusData(null);
+    try {
+      const data = await api.getPNRStatus(pnr);
+      setStatusData(data);
+    } catch (error) {
+      console.error("Failed to fetch PNR:", error);
+    } finally {
       setIsSearching(false);
-    }, 800);
+    }
   };
 
   return (
     <div className="w-full pb-16 bg-[#F5F7FA] min-h-screen">
       
-      <section className="bg-white border-b border-[#D1D5DB] py-6 mb-6">
-        <div className="max-w-[1000px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-           <div>
-             <h1 className="text-xl font-semibold text-[#1F2937]">Check PNR Status</h1>
-             <p className="text-[13px] text-[#6B7280]">Real-time confirmation and boarding chart intelligence.</p>
+      <section className="bg-gradient-to-r from-[#0B4F8A] to-[#1E3A8A] border-b border-[#D1D5DB] py-10 mb-8 shadow-md relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
+        <div className="max-w-[1050px] mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+           <div className="text-center md:text-left">
+             <h1 className="text-2xl font-bold text-white tracking-wide mb-1 flex items-center justify-center md:justify-start gap-2">
+                <Search size={24} className="text-[#93C5FD]"/> 
+                Check PNR Status
+             </h1>
+             <p className="text-[14px] text-[#E0E7FF] font-medium">Get accurate probability metrics and current tracking.</p>
            </div>
            
-           <form onSubmit={handleSearch} className="flex items-center w-full sm:w-[450px]">
-             <div className="relative flex-1">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search size={16} className="text-[#6B7280]" />
+           <form onSubmit={handleSearch} className="flex items-stretch w-full sm:w-[500px] shadow-lg rounded-[8px] overflow-hidden bg-white p-1.5 focus-within:ring-2 focus-within:ring-[#93C5FD] transition-all">
+             <div className="relative flex-1 flex items-center bg-[#F8FAFC] rounded-[6px] border border-transparent hover:border-[#E2E8F0] transition-colors">
+               <div className="pl-4 pr-2 flex items-center pointer-events-none">
+                  <Search size={18} className="text-[#94A3B8]" />
                </div>
                <input 
                  type="text" 
                  value={pnr}
                  onChange={(e) => setPnr(e.target.value)}
                  placeholder="Enter 10 Digit PNR"
-                 className="w-full pl-9 pr-3 py-2.5 bg-[#F9FAFB] border border-[#D1D5DB] focus:outline-none focus:bg-white text-[15px] font-medium text-[#1F2937] rounded-l-md"
+                 className="w-full pr-4 py-3 bg-transparent focus:outline-none focus:bg-white text-[16px] font-bold text-[#0F172A] tracking-wider placeholder-[#94A3B8]"
                  required
                  maxLength={10}
                />
              </div>
-             <Button type="submit" isLoading={isSearching} className="rounded-l-none h-[42px] px-6">
-               Get Status
+             <Button type="submit" isLoading={isSearching} className="ml-1.5 rounded-[6px] h-auto px-8 py-3 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-[15px] tracking-wide shadow-sm transition-colors">
+               SEARCH
              </Button>
            </form>
         </div>

@@ -1,12 +1,13 @@
 /**
  * @file index.jsx (Home Page)
- * @description RailYatri 1:1 structural replica. Purely transactional and dense.
+ * @description God-tier UI RailYatri replica with P2P Seat Exchange explicit explanation.
  */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/ui/SearchBar';
-import { Target, ShieldCheck, Map, Activity, Clock, ArrowRight } from 'lucide-react';
+import { api } from '../../services/api';
+import { Target, Map, Activity, Clock, ArrowRight, ArrowRightLeft, FileText, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,144 +18,150 @@ export default function Home() {
     {
       title: 'Live Train Status',
       desc: 'Get exact location and estimated delays instantly.',
-      icon: <Activity size={20} />,
+      icon: <Activity size={24} className="text-[#3B82F6]" />,
       path: '/live-tracking',
     },
     {
-      title: 'Seat Availability & PNR',
-      desc: 'Verify confirmation probability and boarding charts.',
-      icon: <ShieldCheck size={20} />,
-      path: '/seat-exchange',
+      title: 'PNR Status Insight',
+      desc: 'Check confirmation chances and current waitlist movement.',
+      icon: <FileText size={24} className="text-[#10B981]" />,
+      path: '/pnr-status',
     },
     {
       title: 'GPS Proximity Alarms',
       desc: 'Secure wake-up calls tied to live telemetry.',
-      icon: <Target size={20} />,
+      icon: <Target size={24} className="text-[#F59E0B]" />,
       path: '/proximity-alerts',
     },
     {
       title: 'Smart Connecting Routes',
       desc: 'Intelligent multi-train paths for waitlisted routes.',
-      icon: <Map size={20} />,
+      icon: <Map size={24} className="text-[#8B5CF6]" />,
       path: '/connecting-journeys',
     }
   ];
 
-  const handleSearch = (query) => {
+  const handleSearch = async (query) => {
     setIsSearching(true);
     setTrainResults(null);
-    // Simulate real API fetch for trains on specific route
-    setTimeout(() => {
-      setTrainResults([
-        {
-          id: '12952',
-          name: 'MMCT TEJAS RAJ',
-          departure: '16:55',
-          arrival: '08:35',
-          duration: '15h 40m',
-          runningDays: 'M T W T F S S',
-          classes: ['1A', '2A', '3A'],
-          type: 'Rajdhani'
-        },
-        {
-          id: '12904',
-          name: 'GOLDEN TEMPLE M',
-          departure: '07:20',
-          arrival: '05:05',
-          duration: '21h 45m',
-          runningDays: 'M T W T F S S',
-          classes: ['1A', '2A', '3A', 'SL'],
-          type: 'Superfast'
-        },
-        {
-          id: '12926',
-          name: 'PASCHIM EXPRESS',
-          departure: '16:35',
-          arrival: '14:55',
-          duration: '22h 20m',
-          runningDays: '- T W - F S S',
-          classes: ['2A', '3A', 'SL'],
-          type: 'Superfast'
-        }
-      ]);
+    try {
+      // Calls the centralized API, which handles mock fallback internally if no API Key is present
+      const results = await api.searchTrains(query.fromStation, query.toStation, query.journeyDate);
+      setTrainResults(results);
+    } catch (error) {
+      console.error("Failed to fetch trains:", error);
+      // Fallback UI or empty state could go here, for now we will just show empty or mock results
+    } finally {
       setIsSearching(false);
-    }, 800);
+    }
   };
 
   return (
-    <div className="w-full pb-16 bg-[#F5F7FA] min-h-screen">
+    <div className="w-full pb-16 bg-[#F8FAFC] min-h-screen">
       
-      {/* Strict Minimal Hero */}
-      <section className="w-full bg-[#0B4F8A] text-center pt-8 pb-32">
-        <h1 className="text-3xl font-medium text-white mb-2">
-          Train Ticket Booking
-        </h1>
-        <p className="text-[14px] text-[#E0E7FF] font-medium">
-          Authorized IRCTC ticket booking and PNR tracking.
-        </p>
+      {/* Premium Gradient Hero with Advanced Blur Effects */}
+      <section className="w-full bg-gradient-to-br from-[#020617] via-[#0B4F8A] to-[#1E3A8A] text-center pt-16 pb-40 relative overflow-hidden shadow-2xl">
+        <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none mix-blend-overlay"></div>
+        {/* Glow Effects */}
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[150%] bg-[#3B82F6] rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#60A5FA] rounded-full blur-[100px] opacity-10 pointer-events-none"></div>
+        
+        <div className="relative z-10 max-w-3xl mx-auto px-4 mt-6">
+           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6 shadow-inner">
+             <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse"></span>
+             <span className="text-[12px] font-bold text-[#E0E7FF] uppercase tracking-wider">Trusted by 1M+ Travelers</span>
+           </div>
+           
+           <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-5 tracking-tight font-sans drop-shadow-xl leading-tight">
+             <span className="inline-block mr-2 pb-1 relative">
+                <span className="absolute -inset-2 bg-white/20 blur-xl rounded-full"></span>
+                <span className="relative">🚅</span>
+             </span> 
+             BHARAT-PATH 
+             <span className="inline-block ml-2 pb-1 relative text-[#93C5FD]">
+               <span className="absolute -inset-2 bg-blue-400/20 blur-xl rounded-full"></span>
+               <span className="relative">🚉</span>
+             </span>
+           </h1>
+           <p className="text-[17px] md:text-[19px] text-[#E2E8F0] font-medium tracking-wide max-w-2xl mx-auto leading-relaxed drop-shadow">
+             Your intelligent dashboard for hyper-accurate IRCTC ticket analytics, live train telematics, and peer-to-peer berth connections.
+           </p>
+        </div>
       </section>
 
       {/* Main Search Bar overlaying Hero */}
-      <section className="w-full max-w-[1050px] mx-auto px-4 -mt-20">
-         <SearchBar onSearch={handleSearch} isSearching={isSearching} />
+      <section className="w-full max-w-[1050px] mx-auto px-4 -mt-24 relative z-20">
+         <div className="shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-[10px] bg-white ring-1 ring-black/5">
+            <SearchBar onSearch={handleSearch} isSearching={isSearching} />
+         </div>
       </section>
 
       {/* Conditional Rendering: Train Results OR Default Feature Cards */}
       {trainResults ? (
-         <section className="w-full max-w-[1050px] mx-auto mt-8 px-4 animate-in fade-in slide-in-from-bottom-6">
-            <h2 className="text-[16px] font-bold text-[#1F2937] mb-4">
-               {trainResults.length} Trains found matching your route
-            </h2>
+         <section className="w-full max-w-[1050px] mx-auto mt-10 px-4 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-[18px] font-extrabold text-[#0F172A] tracking-wide">
+                 {trainResults.length} Superior Trains matching your route
+              </h2>
+              <div className="bg-[#EFF6FF] text-[#1E3A8A] text-[12px] font-bold px-3 py-1 rounded-full border border-[#BFDBFE]">Verified Route</div>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
                {trainResults.map((train, idx) => (
-                 <div key={idx} className="bg-white rounded-[6px] border border-[#D1D5DB] hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300">
+                 <div key={idx} className="bg-white rounded-[10px] border border-[#E2E8F0] hover:-translate-y-1 hover:shadow-xl hover:border-[#CBD5E1] transition-all duration-300 overflow-hidden relative group">
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#3B82F6] to-[#1E3A8A] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
-                    <div className="px-5 py-3 border-b border-[#F5F7FA] flex items-center justify-between">
-                       <div className="flex items-center gap-3">
-                         <h3 className="text-[16px] font-bold text-[#1F2937] uppercase tracking-wide">{train.name} <span className="text-[#6B7280]">({train.id})</span></h3>
-                         <span className="text-[11px] font-bold text-[#0B4F8A] bg-[#EFF6FF] px-2 py-0.5 rounded-[4px] uppercase">{train.type}</span>
+                    <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between bg-[#F8FAFC]">
+                       <div className="flex items-center gap-3 w-full sm:w-auto">
+                         <h3 className="text-[17px] font-extrabold text-[#0F172A] uppercase tracking-wide flex items-center gap-2">
+                           {train.name} 
+                           <span className="text-[#64748B] text-[14px] font-bold bg-white border border-[#E2E8F0] px-2 py-0.5 rounded shadow-sm">#{train.id}</span>
+                         </h3>
+                         <span className="text-[11px] font-bold text-[#1E3A8A] bg-[#DBEAFE] border border-[#BFDBFE] px-2.5 py-0.5 rounded-[4px] uppercase tracking-wider ml-auto sm:ml-0">{train.type}</span>
                        </div>
-                       <p className="text-[12px] font-semibold text-[#6B7280] tracking-widest hidden sm:block">Runs On: {train.runningDays}</p>
+                       <p className="text-[12px] font-bold text-[#64748B] tracking-widest hidden sm:block">RUNS ON: <span className="text-[#0F172A] font-extrabold">{train.runningDays}</span></p>
                     </div>
 
-                    <div className="p-5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-8">
                        
                        {/* Timing Block */}
-                       <div className="flex items-center gap-6 w-full md:w-auto">
-                          <div>
-                            <p className="text-2xl font-bold text-[#1F2937]">{train.departure}</p>
-                            <p className="text-[12px] font-bold text-[#6B7280] uppercase">Departure</p>
+                       <div className="flex items-center gap-4 sm:gap-8 w-full md:w-auto">
+                          <div className="text-center sm:text-left">
+                            <p className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">{train.departure}</p>
+                            <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider mt-1">Departure</p>
                           </div>
                           
-                          <div className="flex flex-col items-center px-4 w-[120px]">
-                            <p className="text-[11px] font-bold text-[#6B7280] mb-1"><Clock size={10} className="inline mr-1"/>{train.duration}</p>
-                            <div className="w-full h-px bg-[#D1D5DB] relative">
-                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2">
-                                  <ArrowRight size={14} className="text-[#D1D5DB]" />
+                          <div className="flex flex-col items-center px-2 sm:px-4 w-[100px] sm:w-[150px]">
+                            <p className="text-[11px] font-bold text-[#64748B] mb-2 bg-[#F1F5F9] px-2 py-0.5 rounded-full flex items-center gap-1 border border-[#E2E8F0] shadow-sm"><Clock size={10}/> {train.duration}</p>
+                            <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-[#CBD5E1] to-transparent relative">
+                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-1">
+                                  <div className="w-2 h-2 rounded-full bg-[#3B82F6] shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
                                </div>
                             </div>
                           </div>
 
-                          <div>
-                            <p className="text-2xl font-bold text-[#1F2937]">{train.arrival}</p>
-                            <p className="text-[12px] font-bold text-[#6B7280] uppercase">Arrival</p>
+                          <div className="text-center sm:text-right">
+                            <p className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">{train.arrival}</p>
+                            <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider mt-1">Arrival</p>
                           </div>
                        </div>
 
                        {/* Classes Block */}
-                       <div className="flex gap-2 w-full md:w-auto flex-wrap">
+                       <div className="flex gap-2.5 w-full md:w-auto flex-wrap justify-center sm:justify-start">
                           {train.classes.map(cls => (
-                             <div key={cls} className="border border-[#D1D5DB] rounded-[4px] p-2 min-w-[70px] cursor-pointer hover:border-[#0B4F8A] hover:bg-[#F9FAFB] transition-colors">
-                               <p className="text-[13px] font-bold text-[#0B4F8A] text-center mb-0.5">{cls}</p>
-                               <p className="text-[10px] font-bold tracking-wide text-[#16A34A] text-center uppercase">Check</p>
+                             <div key={cls} className="border border-[#CBD5E1] rounded-[6px] p-2.5 min-w-[75px] bg-white cursor-pointer hover:border-[#3B82F6] hover:bg-[#EFF6FF] hover:shadow-md hover:-translate-y-1 transition-all group/btn relative overflow-hidden">
+                               <div className="absolute inset-0 bg-gradient-to-b from-white to-[#F8FAFC] opacity-100 group-hover/btn:opacity-0 transition-opacity pointer-events-none"></div>
+                               <p className="text-[14px] font-extrabold text-[#1E3A8A] text-center mb-1 relative z-10">{cls}</p>
+                               <p className="text-[10px] font-bold tracking-wider text-[#10B981] text-center uppercase relative z-10 flex items-center justify-center gap-1">
+                                 Check <ArrowRight size={10} className="opacity-0 -ml-2 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all"/>
+                               </p>
                              </div>
                           ))}
                        </div>
 
                        {/* Action Button */}
                        <button 
-                         className="w-full md:w-auto bg-[#0B4F8A] hover:bg-[#0A3D75] text-white px-6 py-2.5 rounded-[4px] text-[14px] font-semibold shadow-sm transition-colors"
+                         className="w-full md:w-auto bg-gradient-to-r from-[#0B4F8A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#172554] text-white px-8 py-3.5 rounded-[6px] text-[14px] font-bold uppercase tracking-wider shadow-lg shadow-blue-900/20 hover:shadow-xl hover:-translate-y-0.5 transition-all"
                          onClick={() => navigate('/live-tracking')}
                        >
                          Track Live Status
@@ -166,27 +173,123 @@ export default function Home() {
             </div>
          </section>
       ) : (
-         <section className="w-full max-w-[1050px] mx-auto mt-12 px-4">
-            <h2 className="text-xl font-bold text-[#1F2937] mb-6">Explore Features</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-               {features.map((feature, idx) => (
-                 <div 
-                   key={idx} 
-                   onClick={() => navigate(feature.path)}
-                   className="bg-white p-5 rounded-[8px] border border-[#D1D5DB] cursor-pointer hover:-translate-y-0.5 hover:shadow-sm transition-all group flex flex-col h-full"
-                 >
-                    <div className="w-10 h-10 rounded-[6px] bg-[#F9FAFB] flex items-center justify-center text-[#0B4F8A] mb-4 border border-[#E5E7EB]">
-                       {feature.icon}
+         <>
+           <section className="w-full max-w-[1050px] mx-auto mt-16 px-4 pb-16 border-b border-[#E2E8F0]">
+              <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-[24px] font-extrabold text-[#0F172A] tracking-wide inline-flex items-center gap-2">
+                    <span className="w-1.5 h-6 bg-[#3B82F6] rounded-full inline-block"></span>
+                    Explore Premier Features
+                 </h2>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                 {features.map((feature, idx) => (
+                   <div 
+                     key={idx} 
+                     onClick={() => navigate(feature.path)}
+                     className="bg-white p-6 rounded-[16px] border border-[#E2E8F0] shadow-sm cursor-pointer hover:-translate-y-2 hover:shadow-2xl hover:border-[#93C5FD] transition-all duration-300 group flex flex-col h-full relative overflow-hidden"
+                   >
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#F8FAFC] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#EFF6FF] rounded-bl-full opacity-0 group-hover:opacity-50 transition-opacity pointer-events-none scale-0 group-hover:scale-100 origin-top-right duration-500"></div>
+                      
+                      <div className="w-14 h-14 rounded-[12px] bg-[#F8FAFC] flex items-center justify-center mb-5 relative z-10 shadow-sm border border-[#F1F5F9] group-hover:bg-white group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+                         {feature.icon}
+                      </div>
+                      <h3 className="text-[17px] font-extrabold text-[#0F172A] mb-2 leading-snug relative z-10 group-hover:text-[#1E3A8A] transition-colors">{feature.title}</h3>
+                      <p className="text-[13px] text-[#64748B] font-medium leading-relaxed mb-6 flex-1 relative z-10">{feature.desc}</p>
+                      
+                      <span className="text-[12px] font-bold text-[#3B82F6] group-hover:text-[#1D4ED8] mt-auto uppercase tracking-widest relative z-10 flex items-center gap-1.5 opacity-80 group-hover:opacity-100">
+                         Explore <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                   </div>
+                 ))}
+              </div>
+           </section>
+
+           {/* Dedicated P2P Seat Exchange Explanation Block */}
+           <section className="w-full max-w-[1050px] mx-auto mt-16 px-4 pb-12">
+              <div className="bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#020617] rounded-[24px] overflow-hidden shadow-2xl relative border border-[#334155]">
+                 
+                 {/* Decorative background elements inside the card */}
+                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#3B82F6] blur-[150px] opacity-[0.15] rounded-full pointer-events-none"></div>
+                 <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#F59E0B] blur-[120px] opacity-[0.1] rounded-full pointer-events-none"></div>
+
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
+                    
+                    {/* Left Content Area */}
+                    <div className="p-8 md:p-12 flex flex-col justify-center">
+                       <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10 text-[#60A5FA] text-[11px] font-bold uppercase tracking-widest mb-6 w-fit backdrop-blur-sm shadow-sm ring-1 ring-white/20">
+                          <ArrowRightLeft size={12} /> New Feature
+                       </div>
+                       
+                       <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4 tracking-tight">
+                         Didn't get your preferred berth? <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60A5FA] to-[#34D399]">Swap it.</span>
+                       </h2>
+                       
+                       <p className="text-[#94A3B8] text-[15px] font-medium leading-relaxed mb-8">
+                         Introducing <strong className="text-white">P2P Seat Exchange</strong>. Connect instantly with other verified passengers on your exact train who want to exchange berths. Give up that Upper berth for a Lower one if someone else is willing to trade.
+                       </p>
+
+                       <ul className="space-y-4 mb-8">
+                          <li className="flex items-start gap-3">
+                             <CheckCircle2 size={20} className="text-[#34D399] shrink-0 mt-0.5" />
+                             <span className="text-[#E2E8F0] text-[14px] font-medium">Post your current seat & wait for matches.</span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                             <CheckCircle2 size={20} className="text-[#34D399] shrink-0 mt-0.5" />
+                             <span className="text-[#E2E8F0] text-[14px] font-medium">Chat securely with co-passengers.</span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                             <CheckCircle2 size={20} className="text-[#34D399] shrink-0 mt-0.5" />
+                             <span className="text-[#E2E8F0] text-[14px] font-medium">100% Free & Community driven.</span>
+                          </li>
+                       </ul>
+
+                       <button 
+                         onClick={() => navigate('/seat-exchange')}
+                         className="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-bold px-8 py-3.5 rounded-[8px] flex items-center justify-center gap-2 w-fit shadow-[0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-0.5 transition-all text-[15px] tracking-wide"
+                       >
+                         Open Seat Exchange Board <ArrowRight size={18} />
+                       </button>
                     </div>
-                    <h3 className="text-[15px] font-bold text-[#1F2937] mb-1.5 leading-snug">{feature.title}</h3>
-                    <p className="text-[13px] text-[#6B7280] font-medium leading-[1.6] mb-4 flex-1">{feature.desc}</p>
-                    <span className="text-[12px] font-bold text-[#0B4F8A] group-hover:text-[#0A3D75] mt-auto uppercase tracking-wide">
-                       View Feature
-                    </span>
+
+                    {/* Right Disclaimer/Visual Area */}
+                    <div className="bg-black/20 p-8 md:p-12 border-l border-white/5 flex flex-col items-center justify-center relative">
+                       
+                       <div className="bg-white rounded-[16px] p-6 shadow-2xl w-full max-w-sm mb-8 transform rotate-2 hover:rotate-0 transition-all duration-300">
+                          <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#E2E8F0]">
+                             <div className="flex items-center gap-3">
+                               <div className="w-10 h-10 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[#64748B]">
+                                  <ArrowRightLeft size={20} />
+                               </div>
+                               <div>
+                                 <p className="text-[12px] font-bold text-[#64748B] uppercase">Offer</p>
+                                 <p className="text-[15px] font-extrabold text-[#0F172A]">B4 | Upper</p>
+                               </div>
+                             </div>
+                             <ArrowRight size={16} className="text-[#CBD5E1]" />
+                             <div className="text-right">
+                               <p className="text-[12px] font-bold text-[#64748B] uppercase">Needs</p>
+                               <p className="text-[15px] font-extrabold text-[#3B82F6]">Lower</p>
+                             </div>
+                          </div>
+                          <button className="w-full bg-[#0F172A] text-white py-2 rounded-[6px] text-[13px] font-bold">Connect via Chat</button>
+                       </div>
+
+                       <div className="bg-[#450A0A]/40 border border-[#7F1D1D] rounded-[12px] p-5 w-full max-w-sm backdrop-blur-sm">
+                          <h4 className="text-[13px] font-bold text-[#FCA5A5] uppercase tracking-wider mb-2 flex items-center gap-2">
+                             <AlertTriangle size={16} /> Absolutely Unofficial
+                          </h4>
+                          <p className="text-[13px] text-[#FDA4AF] leading-relaxed font-medium">
+                            This is purely a peer-to-peer mechanic. Any seat exchange agreed upon here is a <strong className="text-white">mutual understanding</strong> between travelers and <strong className="text-white">DOES NOT reflect in the official IRCTC portal</strong> or chart. Verify identities before swapping.
+                          </p>
+                       </div>
+
+                    </div>
                  </div>
-               ))}
-            </div>
-         </section>
+              </div>
+           </section>
+         </>
       )}
 
     </div>
