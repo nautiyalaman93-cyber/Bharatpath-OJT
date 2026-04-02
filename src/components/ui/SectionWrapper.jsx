@@ -1,42 +1,42 @@
 /**
  * @file SectionWrapper.jsx
- * @description A reusable wrapper for separating main sections with Headings and descriptions.
- * 
- * WHY THIS FILE EXISTS:
- * Provides the required strict structure "Heading -> Subheading" for every page in the app, saving boilerplate.
- * 
- * WHAT PROBLEM IT SOLVES:
- * - Ensures consistently sized headers across all pages.
- * - Handles max-width and internal spacing elegantly.
- * 
- * WHAT WILL BREAK IF REMOVED:
- * Pages will lose their standard header structure and margin definitions.
+ * @description A reusable wrapper for separating main sections with headings and descriptions.
+ * Uses CSS custom properties so it adapts to both dark and light themes.
  */
 
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs) {
-  return twMerge(clsx(inputs));
-}
-
-export function SectionWrapper({ title, description, children, className, actionContent }) {
+export function SectionWrapper({ title, description, children, className = '', actionContent }) {
   return (
-    <div className={cn("w-full space-y-6", className)}>
+    <div className={`w-full space-y-6 ${className}`}>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div className="space-y-1">
-          {title && <h1 className="text-2xl font-bold tracking-tight text-slate-800">{title}</h1>}
-          {description && <p className="text-sm font-medium text-slate-500">{description}</p>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {title && (
+            <h1
+              style={{
+                fontSize: '22px',
+                fontWeight: 700,
+                color: 'var(--text-heading)',
+                fontFamily: "'Poppins', sans-serif",
+                margin: 0,
+              }}
+            >
+              {title}
+            </h1>
+          )}
+          {description && (
+            <p
+              style={{
+                fontSize: '13px',
+                color: 'var(--text-secondary)',
+                margin: 0,
+              }}
+            >
+              {description}
+            </p>
+          )}
         </div>
-        {actionContent && (
-          <div className="shrink-0">
-            {actionContent}
-          </div>
-        )}
+        {actionContent && <div className="shrink-0">{actionContent}</div>}
       </div>
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   );
 }

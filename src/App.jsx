@@ -19,6 +19,7 @@
 
 import AppRoutes from './routes';
 import { TrainProvider } from './context/TrainContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 /*
 // ==========================================
@@ -40,12 +41,14 @@ function AppWithAuth() {
 
 function App() {
   return (
-    // If the Auth system was active, we would wrap this with <AuthProvider>
-    <TrainProvider>
-      <div className="app-wrapper w-full min-h-screen bg-slate-950">
-        <AppRoutes />
-      </div>
-    </TrainProvider>
+    <ThemeProvider>
+      {/* If the Auth system was active, we would wrap this with <AuthProvider> */}
+      <TrainProvider>
+        <div className="app-wrapper w-full min-h-screen" style={{ background: 'var(--bg-page)', color: 'var(--text-primary)' }}>
+          <AppRoutes />
+        </div>
+      </TrainProvider>
+    </ThemeProvider>
   );
 }
 

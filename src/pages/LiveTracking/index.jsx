@@ -1,11 +1,10 @@
 /**
  * @file index.jsx (Live Tracking Page)
- * @description Rigid data-driven live tracking board devoid of UI flair.
+ * @description Theme-aware live tracking board with timeline animation.
  */
 
 import { useState } from 'react';
-import { Button } from '../../components/ui/Button';
-import { Train as TrainIcon, Clock, Activity, MapPin } from 'lucide-react';
+import { Train as TrainIcon, Clock, Activity, MapPin, Gauge, Navigation } from 'lucide-react';
 
 export default function LiveTracking() {
   const [trainNumber, setTrainNumber] = useState('12952');
@@ -22,114 +21,218 @@ export default function LiveTracking() {
   };
 
   const routeStations = [
-    { name: 'New Delhi (NDLS)', time: '16:25', status: 'Departed', active: false, passed: true },
-    { name: 'Kota Jn (KOTA)', time: '21:00', status: 'Departed', active: false, passed: true },
-    { name: 'Ratlam Jn (RTM)', time: '00:15', status: 'Departed', active: false, passed: true },
-    { name: 'Vadodara Jn (BRC)', time: '03:52', status: 'Arriving Now', active: true, passed: false },
-    { name: 'Surat (ST)', time: '05:43', status: 'Expected', active: false, passed: false },
-    { name: 'Borivali (BVI)', time: '08:40', status: 'Expected', active: false, passed: false },
-    { name: 'Mumbai Central (MMCT)', time: '09:35', status: 'Destination', active: false, passed: false },
+    { name: 'New Delhi (NDLS)',      time: '16:25', status: 'Departed',     active: false, passed: true },
+    { name: 'Kota Jn (KOTA)',       time: '21:00', status: 'Departed',     active: false, passed: true },
+    { name: 'Ratlam Jn (RTM)',      time: '00:15', status: 'Departed',     active: false, passed: true },
+    { name: 'Vadodara Jn (BRC)',    time: '03:52', status: 'Arriving Now', active: true,  passed: false },
+    { name: 'Surat (ST)',           time: '05:43', status: 'Expected',     active: false, passed: false },
+    { name: 'Borivali (BVI)',       time: '08:40', status: 'Expected',     active: false, passed: false },
+    { name: 'Mumbai Central (MMCT)',time: '09:35', status: 'Destination',  active: false, passed: false },
   ];
 
   return (
-    <div className="w-full pb-16 bg-[#F5F7FA] min-h-screen">
-      
-      <section className="bg-white border-b border-[#D1D5DB] py-6 mb-6">
+    <div className="w-full pb-16 min-h-screen" style={{ background: 'var(--bg-page)' }}>
+
+      {/* ═══ Header ═══ */}
+      <section
+        className="py-6 mb-6 border-b anim-fade-in"
+        style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
+      >
         <div className="max-w-[1000px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-           <div>
-             <h1 className="text-xl font-semibold text-[#1F2937]">Live Train Status</h1>
-             <p className="text-[13px] text-[#6B7280]">Real-time GPS tracking for exact delay statistics</p>
-           </div>
-           
-           <form onSubmit={handleSearch} className="flex items-center w-full sm:w-[400px]">
-             <div className="relative flex-1">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <TrainIcon size={16} className="text-[#6B7280]" />
-               </div>
-               <input 
-                 type="text" 
-                 value={trainNumber}
-                 onChange={(e) => setTrainNumber(e.target.value)}
-                 placeholder="Train Number"
-                 className="w-full pl-9 pr-3 py-2.5 bg-[#F9FAFB] border border-[#D1D5DB] rounded-l-md focus:outline-none focus:bg-white text-[15px] font-medium text-[#1F2937] rounded-none"
-                 required
-               />
-             </div>
-             <Button type="submit" isLoading={isSearching} className="rounded-l-none h-[42px] px-6">
-               Check
-             </Button>
-           </form>
+          <div className="anim-slide-left">
+            <h1
+              className="text-xl font-bold flex items-center gap-2"
+              style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
+            >
+              <Navigation size={20} style={{ color: 'var(--primary)' }} />
+              Live Train Status
+            </h1>
+            <p className="text-[13px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+              Real-time GPS tracking for exact delay statistics
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSearch}
+            className="flex items-center w-full sm:w-[400px] rounded-xl overflow-hidden anim-fade-up anim-delay-1"
+            style={{ border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
+          >
+            <div className="relative flex-1 flex items-center" style={{ background: 'var(--bg-input)' }}>
+              <div className="pl-3 pr-2 flex items-center pointer-events-none">
+                <TrainIcon size={16} style={{ color: 'var(--text-muted)' }} />
+              </div>
+              <input
+                type="text"
+                value={trainNumber}
+                onChange={(e) => setTrainNumber(e.target.value)}
+                placeholder="Train Number"
+                className="w-full pr-3 py-2.5 bg-transparent focus:outline-none text-[14px] font-semibold"
+                style={{ color: 'var(--text-primary)' }}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isSearching}
+              className="bp-btn bp-btn--primary rounded-none px-6 h-full text-[13px] font-bold"
+            >
+              {isSearching ? '…' : 'Check'}
+            </button>
+          </form>
         </div>
       </section>
 
+      {/* ═══ Results ═══ */}
       {hasSearched && (
-        <section className="max-w-[1000px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-           
-           {/* Timeline */}
-           <div className="lg:col-span-2 bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB]">
-              <div className="px-5 py-4 border-b border-[#D1D5DB] bg-[#F9FAFB]">
-                 <h2 className="text-[15px] font-bold text-[#1F2937]">Train Route & Progress</h2>
-              </div>
-              
-              <div className="p-6 relative">
-                {/* Vertical Spine */}
-                <div className="absolute top-8 bottom-8 left-[35px] w-[3px] bg-[#E5E7EB]"></div>
-                <div className="absolute top-8 left-[35px] w-[3px] bg-[#16A34A] z-0" style={{ height: '60%' }}></div>
+        <section className="max-w-[1000px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6 anim-fade-up">
 
-                {routeStations.map((station, idx) => (
-                  <div key={idx} className="relative z-10 flex gap-5 items-center mb-6 last:mb-0">
-                    <div className={`w-[22px] h-[22px] rounded-full border-[3px] flex items-center justify-center bg-white ${station.active ? 'border-[#0B4F8A]' : station.passed ? 'border-[#16A34A]' : 'border-[#D1D5DB]'}`}>
-                       {station.active && <div className="w-[10px] h-[10px] bg-[#0B4F8A] rounded-full"></div>}
-                    </div>
-                    
-                    <div className="flex-1 bg-[#F9FAFB] border border-[#E5E7EB] rounded-[6px] px-4 py-3 flex justify-between items-center">
-                       <div>
-                         <p className={`font-semibold text-[15px] ${station.active ? 'text-[#0B4F8A]' : 'text-[#1F2937]'}`}>{station.name}</p>
-                         <p className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wide mt-0.5">{station.status}</p>
-                       </div>
-                       <p className={`text-[15px] font-semibold ${station.active ? 'text-[#0B4F8A]' : 'text-[#475569]'}`}>
-                          {station.time}
-                       </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-           </div>
+          {/* Timeline */}
+          <div className="lg:col-span-2 bp-card overflow-hidden">
+            <div
+              className="px-5 py-4 border-b"
+              style={{ borderColor: 'var(--border)', background: 'var(--bg-surface-2)' }}
+            >
+              <h2 className="text-[15px] font-bold" style={{ color: 'var(--text-heading)' }}>
+                Train Route & Progress
+              </h2>
+            </div>
 
-           {/* Metrics Panel */}
-           <div className="space-y-4">
-              
-              <div className="bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB] p-5 text-center">
-                <p className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide mb-1">• 12952 MUMBAI RAJDHANI</p>
-                <h3 className="text-2xl font-bold text-[#1F2937] mb-4">Vadodara Jn</h3>
-                
-                <div className="grid grid-cols-2 gap-3 text-left">
-                  <div className="border border-[#E5E7EB] p-3 rounded-[6px] bg-[#F9FAFB]">
-                    <p className="text-[11px] font-bold text-[#6B7280] uppercase">Speed</p>
-                    <p className="text-lg font-bold text-[#1F2937]">112 km/h</p>
+            <div className="p-6 relative">
+              {/* Vertical spine */}
+              <div
+                className="absolute top-8 bottom-8 left-[35px] w-[3px] rounded-full"
+                style={{ background: 'var(--border)' }}
+              />
+              <div
+                className="absolute top-8 left-[35px] w-[3px] rounded-full z-0"
+                style={{ background: 'var(--success)', height: '50%' }}
+              />
+
+              {routeStations.map((station, idx) => (
+                <div
+                  key={idx}
+                  className={`relative z-10 flex gap-5 items-center mb-6 last:mb-0 anim-fade-up anim-delay-${Math.min(idx + 1, 6)}`}
+                >
+                  {/* Node */}
+                  <div
+                    className="w-[22px] h-[22px] rounded-full border-[3px] flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: 'var(--bg-surface)',
+                      borderColor: station.active ? 'var(--primary)' : station.passed ? 'var(--success)' : 'var(--border)',
+                      boxShadow: station.active ? '0 0 0 4px var(--primary-glow)' : 'none',
+                    }}
+                  >
+                    {station.active && (
+                      <div className="w-[10px] h-[10px] rounded-full" style={{ background: 'var(--primary)' }} />
+                    )}
                   </div>
-                  <div className="border border-[#E5E7EB] p-3 rounded-[6px] bg-[#F9FAFB]">
-                    <p className="text-[11px] font-bold text-[#6B7280] uppercase">Remaining</p>
-                    <p className="text-lg font-bold text-[#1F2937]">392 km</p>
+
+                  {/* Station card */}
+                  <div
+                    className="flex-1 rounded-xl px-4 py-3 flex justify-between items-center transition-colors duration-200"
+                    style={{
+                      background: station.active ? 'var(--primary-light)' : 'var(--bg-surface-2)',
+                      border: station.active ? '1px solid var(--primary)' : '1px solid var(--border-light)',
+                    }}
+                    onMouseEnter={(e) => { if (!station.active) e.currentTarget.style.borderColor = 'var(--primary)'; }}
+                    onMouseLeave={(e) => { if (!station.active) e.currentTarget.style.borderColor = 'var(--border-light)'; }}
+                  >
+                    <div>
+                      <p
+                        className="font-semibold text-[14px]"
+                        style={{ color: station.active ? 'var(--primary)' : 'var(--text-primary)' }}
+                      >
+                        {station.name}
+                      </p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                        {station.status}
+                      </p>
+                    </div>
+                    <p
+                      className="text-[14px] font-bold"
+                      style={{ color: station.active ? 'var(--primary)' : 'var(--text-secondary)' }}
+                    >
+                      {station.time}
+                    </p>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB] p-4 text-center">
-                   <Clock className="mx-auto text-[#16A34A] mb-1.5" size={20}/>
-                   <p className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wide">Punctuality</p>
-                   <p className="text-[14px] font-bold text-[#16A34A] mt-0.5">On Time</p>
-                 </div>
-                 <div className="bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB] p-4 text-center">
-                   <Activity className="mx-auto text-[#D97706] mb-1.5" size={20}/>
-                   <p className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wide">Overall Delay</p>
-                   <p className="text-[14px] font-bold text-[#D97706] mt-0.5">25 Mins</p>
-                 </div>
-              </div>
+          {/* ═══ Metrics sidebar ═══ */}
+          <div className="space-y-4">
+            {/* Train info */}
+            <div className="bp-card p-5 text-center anim-scale-in anim-delay-1">
+              <p className="text-[11px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>
+                12952 MUMBAI RAJDHANI
+              </p>
+              <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}>
+                Vadodara Jn
+              </h3>
 
-           </div>
+              <div className="grid grid-cols-2 gap-3 text-left">
+                {/* Speed */}
+                <div
+                  className="p-3.5 rounded-xl"
+                  style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-light)' }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Gauge size={12} style={{ color: 'var(--primary)' }} />
+                    <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>Speed</p>
+                  </div>
+                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>112 km/h</p>
+                </div>
+                {/* Distance */}
+                <div
+                  className="p-3.5 rounded-xl"
+                  style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-light)' }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <MapPin size={12} style={{ color: 'var(--secondary)' }} />
+                    <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>Remaining</p>
+                  </div>
+                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>392 km</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Punctuality + delay */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bp-card p-4 text-center anim-scale-in anim-delay-2">
+                <Clock size={20} style={{ color: 'var(--success)' }} className="mx-auto mb-1.5" />
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Punctuality</p>
+                <p className="text-[14px] font-bold mt-0.5" style={{ color: 'var(--success)' }}>On Time</p>
+              </div>
+              <div className="bp-card p-4 text-center anim-scale-in anim-delay-3">
+                <Activity size={20} style={{ color: 'var(--warning)' }} className="mx-auto mb-1.5" />
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Delay</p>
+                <p className="text-[14px] font-bold mt-0.5" style={{ color: 'var(--warning)' }}>25 Mins</p>
+              </div>
+            </div>
+          </div>
         </section>
+      )}
+
+      {/* Empty state */}
+      {!hasSearched && (
+        <div className="max-w-[500px] mx-auto text-center py-20 px-4 anim-fade-up anim-delay-2">
+          <div
+            className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+            style={{ background: 'var(--primary-light)', border: '1px solid var(--border)' }}
+          >
+            <TrainIcon size={28} style={{ color: 'var(--primary)' }} />
+          </div>
+          <h3
+            className="text-lg font-bold mb-2"
+            style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
+          >
+            Search a train to track
+          </h3>
+          <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>
+            Enter the train number above to see real-time route progress, speed, and delay metrics.
+          </p>
+        </div>
       )}
     </div>
   );

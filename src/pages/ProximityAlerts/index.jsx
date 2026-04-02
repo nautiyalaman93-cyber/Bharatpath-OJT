@@ -1,83 +1,194 @@
 /**
  * @file index.jsx (Proximity Alerts Page)
- * @description Linear alarm configuration stripped of gradients and rounded heavily.
+ * @description GPS-triggered destination alarms — theme-aware, animated.
  */
 
 import { useState } from 'react';
-import { Button } from '../../components/ui/Button';
-import { MapPin } from 'lucide-react';
+import { MapPin, Bell, BellRing, Gauge, RadioTower, LocateFixed } from 'lucide-react';
+import StationDropdown from '../../components/ui/StationDropdown';
 
 export default function ProximityAlerts() {
   const [distance, setDistance] = useState(15);
-  const [targetStation, setTargetStation] = useState('MMCT | Mumbai Central');
+  const [targetStation, setTargetStation] = useState('');
+  const [trainNumber, setTrainNumber] = useState('');
   const [isActive, setIsActive] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [alertSet, setAlertSet] = useState(false);
+
+  const handleActivate = () => {
+    if (!targetStation || !trainNumber) return;
+    setHasSearched(true);
+    setAlertSet(true);
+  };
 
   return (
-    <div className="w-full pb-16 bg-[#F5F7FA] min-h-screen">
-      
-      <section className="bg-white border-b border-[#D1D5DB] py-6 mb-8">
-        <div className="max-w-[1000px] mx-auto px-4">
-           <h1 className="text-xl font-semibold text-[#1F2937]">Destination Alarms</h1>
-           <p className="text-[13px] text-[#6B7280]">GPS-triggered wake-up calls based on train proximity.</p>
+    <div className="w-full pb-16 min-h-screen" style={{ background: 'var(--bg-page)' }}>
+
+      {/* ═══ Header ═══ */}
+      <section
+        className="py-6 mb-8 border-b anim-fade-in"
+        style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
+      >
+        <div className="max-w-[1000px] mx-auto px-4 flex items-center gap-3 anim-slide-left">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            style={{ background: 'var(--primary-light)', border: '1px solid var(--border)' }}
+          >
+            <RadioTower size={20} style={{ color: 'var(--primary)' }} />
+          </div>
+          <div>
+            <h1
+              className="text-xl font-bold"
+              style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
+            >
+              Destination Alarms
+            </h1>
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
+              GPS-triggered wake-up calls based on train proximity.
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="max-w-[600px] mx-auto px-4">
-        <div className="bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB] overflow-hidden">
-           
-           <div className="px-6 py-4 border-b border-[#D1D5DB] bg-[#F9FAFB] flex items-center justify-between">
-              <h2 className="text-[15px] font-bold text-[#1F2937] uppercase tracking-wide">Configure Alarm</h2>
-              
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" checked={isActive} onChange={() => setIsActive(!isActive)} />
-                <div className="w-11 h-6 bg-[#D1D5DB] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#16A34A]"></div>
+      {/* ═══ Configuration Card ═══ */}
+      <section className="max-w-[620px] mx-auto px-4">
+        <div className="bp-card overflow-hidden anim-fade-up">
+
+          {/* Card header with toggle */}
+          <div
+            className="px-6 py-4 border-b flex items-center justify-between"
+            style={{ borderColor: 'var(--border)', background: 'var(--bg-surface-2)' }}
+          >
+            <div className="flex items-center gap-2.5">
+              <BellRing size={18} style={{ color: 'var(--primary)' }} />
+              <h2
+                className="text-[15px] font-bold uppercase tracking-wide"
+                style={{ color: 'var(--text-heading)' }}
+              >
+                Configure Alarm
+              </h2>
+            </div>
+
+            {/* Toggle switch */}
+            <button
+              onClick={() => setIsActive(!isActive)}
+              className="relative w-12 h-7 rounded-full transition-colors duration-300"
+              style={{
+                background: isActive ? 'var(--primary)' : 'var(--border)',
+                boxShadow: isActive ? '0 0 12px var(--primary-glow)' : 'none',
+              }}
+              aria-label="Toggle alarm"
+            >
+              <span
+                className="absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full bg-white transition-transform duration-300"
+                style={{
+                  transform: isActive ? 'translateX(21px)' : 'translateX(0)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                }}
+              />
+            </button>
+          </div>
+
+          {/* Card body */}
+          <div
+            className="p-6 space-y-5 transition-opacity duration-300"
+            style={{ opacity: isActive ? 1 : 0.35, pointerEvents: isActive ? 'auto' : 'none' }}
+          >
+
+            {/* Train number */}
+            <div className="bp-input-wrapper anim-fade-up anim-delay-1">
+              <label className="bp-label">Train Number</label>
+              <input
+                className="bp-input"
+                placeholder="e.g. 12952"
+                value={trainNumber}
+                onChange={(e) => setTrainNumber(e.target.value)}
+              />
+            </div>
+
+            {/* Target station dropdown */}
+            <div className="anim-fade-up anim-delay-2">
+              <label
+                className="block text-[12px] font-semibold uppercase tracking-wide mb-1.5"
+                style={{ color: 'var(--text-secondary)', letterSpacing: '0.05em' }}
+              >
+                Target Station
               </label>
-           </div>
+              <StationDropdown
+                label="Station"
+                value={targetStation}
+                onChange={setTargetStation}
+                placeholder="Select your destination station"
+              />
+            </div>
 
-           <div className={`p-6 space-y-6 ${isActive ? 'opacity-100' : 'opacity-40 pointer-events-none transition-opacity'}`}>
-              
-              <div>
-                <label className="block text-[12px] font-bold text-[#6B7280] uppercase tracking-wide mb-2">Target Station Code</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#6B7280]">
-                     <MapPin size={16} />
-                  </div>
-                  <input 
-                    type="text" 
-                    value={targetStation}
-                    onChange={(e) => setTargetStation(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-[#F9FAFB] border border-[#D1D5DB] rounded-[4px] focus:outline-none focus:border-[#0B4F8A] font-semibold text-[#1F2937] text-[15px]"
-                  />
-                </div>
+            {/* Trigger radius slider */}
+            <div className="anim-fade-up anim-delay-3">
+              <div className="flex justify-between items-end mb-3">
+                <label className="bp-label">Trigger Radius</label>
+                <p className="text-[20px] font-bold" style={{ color: 'var(--text-heading)' }}>
+                  {distance}
+                  <span className="text-[13px] font-semibold ml-1" style={{ color: 'var(--text-muted)' }}>km</span>
+                </p>
               </div>
-
-              <div>
-                <div className="flex justify-between items-end mb-3">
-                  <label className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide">Trigger Radius</label>
-                  <p className="text-[18px] font-bold text-[#1F2937]">{distance} km</p>
-                </div>
-                <input 
-                  type="range" 
-                  min="5" 
-                  max="50" 
-                  value={distance} 
-                  onChange={(e) => setDistance(e.target.value)} 
-                  className="w-full h-1 bg-[#D1D5DB] rounded-lg appearance-none cursor-pointer accent-[#0B4F8A]" 
-                />
-                <div className="flex justify-between text-[11px] font-bold text-[#6B7280] uppercase tracking-wide mt-2">
-                  <span>5 km</span>
-                  <span>50 km</span>
-                </div>
+              <input
+                type="range"
+                min="5"
+                max="50"
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, var(--primary) ${((distance - 5) / 45) * 100}%, var(--border) ${((distance - 5) / 45) * 100}%)`,
+                  accentColor: 'var(--primary)',
+                }}
+              />
+              <div className="flex justify-between text-[11px] font-bold uppercase tracking-wide mt-2" style={{ color: 'var(--text-muted)' }}>
+                <span>5 km</span>
+                <span>50 km</span>
               </div>
+            </div>
 
-              <div className="pt-4 border-t border-[#E5E7EB]">
-                 <Button className="w-full h-[45px] text-[15px] tracking-wide" disabled={!isActive}>
-                   SAVE SETTINGS
-                 </Button>
-              </div>
-
-           </div>
+            {/* Save / activate button */}
+            <div className="pt-4 border-t anim-fade-up anim-delay-4" style={{ borderColor: 'var(--border)' }}>
+              <button
+                className="bp-btn bp-btn--primary w-full py-3 text-[14px] font-bold flex items-center justify-center gap-2"
+                disabled={!isActive || !targetStation || !trainNumber}
+                onClick={handleActivate}
+              >
+                <LocateFixed size={16} />
+                SET ALARM
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* ═══ Alert Set Confirmation ═══ */}
+        {alertSet && (
+          <div className="mt-6 bp-card p-6 text-center anim-scale-in">
+            <div
+              className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+              style={{
+                background: 'var(--success-bg)',
+                border: '1px solid var(--success)',
+              }}
+            >
+              <Bell size={28} style={{ color: 'var(--success)' }} />
+            </div>
+            <h3
+              className="text-lg font-bold mb-1"
+              style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
+            >
+              Alarm Active
+            </h3>
+            <p className="text-[14px] mb-1" style={{ color: 'var(--text-secondary)' }}>
+              You'll be alerted when your train is within <strong style={{ color: 'var(--primary)' }}>{distance} km</strong> of
+            </p>
+            <p className="text-[15px] font-bold" style={{ color: 'var(--text-heading)' }}>
+              {targetStation}
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

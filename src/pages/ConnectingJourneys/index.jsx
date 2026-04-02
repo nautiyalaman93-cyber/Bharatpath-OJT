@@ -90,7 +90,14 @@ export default function ConnectingJourneys() {
 
       {/* ═══ Search Card ═══ */}
       <section className="max-w-[1000px] mx-auto px-4 mb-8">
-        <div className="bp-card p-5 anim-fade-up">
+        <div
+          className="rounded-2xl p-5 anim-fade-up"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
           <div className="flex flex-col md:flex-row items-end gap-4">
             {/* From */}
             <div className="flex-1 w-full">

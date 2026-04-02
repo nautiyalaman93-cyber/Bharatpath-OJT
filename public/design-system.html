@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design System</title>
+  <style>
+
+    /* ================================================
+       ROOT VARIABLES — Light Mode
+       ================================================ */
+    :root {
+      --bg-primary:            #FFFFFF;
+      --bg-secondary:          #F7FAFC;
+      --bg-tertiary:           #EDF2F7;
+
+      --text-primary:          #1A202C;
+      --text-secondary:        #4A5568;
+      --text-tertiary:         #718096;
+
+      --accent-primary:        #FF6B35;
+      --accent-secondary:      #1B6CA8;
+      --accent-tertiary:       #00D9FF;
+
+      --border-color:          #E2E8F0;
+    }
+
+    /* ================================================
+       DARK MODE VARIABLES — defined separately,
+       NOT applied automatically, NOT merged with :root
+       ================================================ */
+    .dark-mode {
+      --dark-bg-primary:       #0F1419;
+      --dark-bg-secondary:     #1A202C;
+      --dark-bg-tertiary:      #2D3748;
+
+      --dark-text-primary:     #FFFFFF;
+      --dark-text-secondary:   #A0AEC0;
+      --dark-text-tertiary:    #718096;
+
+      --dark-border-color:     #2D3748;
+    }
+
+    /* ================================================
+       GLOBAL RESET
+       ================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ================================================
+       BASE
+       ================================================ */
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ================================================
+       LAYOUT
+       ================================================ */
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    /* ── Section (bg-secondary) ── */
+    .section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    /* ── Card grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Card (bg-tertiary) ── */
+    .card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Card accent bar ── */
+    .card-bar {
+      width: 32px;
+      height: 3px;
+      border-radius: 2px;
+    }
+    .card-bar--primary   { background: var(--accent-primary); }
+    .card-bar--secondary { background: var(--accent-secondary); }
+    .card-bar--tertiary  { background: var(--accent-tertiary); }
+
+    /* ── Card label ── */
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-tertiary);
+    }
+
+    /* ── Card heading ── */
+    .card-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* ── Card body ── */
+    .card-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ── Card meta ── */
+    .card-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* ================================================
+       BUTTONS
+       ================================================ */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    /* Primary button — accent-primary */
+    .btn-primary {
+      background: var(--accent-primary);
+      color: #FFFFFF;
+    }
+
+    /* Secondary button — accent-secondary */
+    .btn-secondary {
+      background: var(--accent-secondary);
+      color: #FFFFFF;
+    }
+
+    /* Tertiary / outlined — accent-tertiary */
+    .btn-tertiary {
+      background: transparent;
+      color: var(--accent-tertiary);
+      border: 1.5px solid var(--accent-tertiary);
+    }
+
+    /* Ghost — border only */
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border-color);
+    }
+
+    /* ================================================
+       TEXT BLOCKS
+       ================================================ */
+    .text-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .text-h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .text-h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .text-h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .text-body {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .text-small {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      line-height: 1.6;
+    }
+
+    .text-accent-primary   { color: var(--accent-primary); }
+    .text-accent-secondary { color: var(--accent-secondary); }
+    .text-accent-tertiary  { color: var(--accent-tertiary); }
+
+    /* ================================================
+       STAT BLOCK inside card
+       ================================================ */
+    .stat {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .stat--primary   { color: var(--accent-primary); }
+    .stat--secondary { color: var(--accent-secondary); }
+    .stat--tertiary  { color: var(--accent-tertiary); }
+
+    /* ================================================
+       DIVIDER
+       ================================================ */
+    .divider {
+      height: 1px;
+      background: var(--border-color);
+      width: 100%;
+    }
+
+    /* ================================================
+       BADGE
+       ================================================ */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+    }
+    .badge--primary {
+      background: var(--accent-primary);
+      color: #FFFFFF;
+      border-color: var(--accent-primary);
+    }
+    .badge--secondary {
+      background: var(--accent-secondary);
+      color: #FFFFFF;
+      border-color: var(--accent-secondary);
+    }
+    .badge--outline-primary {
+      background: transparent;
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    /* ================================================
+       INLINE CODE (variable reference)
+       ================================================ */
+    .var-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    /* ================================================
+       COLOR SWATCHES
+       ================================================ */
+    .swatch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .swatch {
+      width: 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .swatch-dot {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .swatch-name {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      text-align: center;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    /* ================================================
+       TWO-COLUMN LAYOUT
+       ================================================ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .two-col { grid-template-columns: 1fr; }
+      .text-h1 { font-size: 24px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ================================================
+       HEADER TEXT BLOCK
+       ================================================ -->
+  <div class="text-block">
+    <p class="text-small">CSS Variable Design System · Light Mode</p>
+    <h1 class="text-h1">Design System<br><span class="text-accent-primary">Components</span></h1>
+    <p class="text-body" style="max-width: 560px;">
+      A clean, minimal UI built strictly using the defined CSS variable system.
+      All colors, backgrounds, borders, and text use only the prescribed tokens.
+    </p>
+  </div>
+
+  <!-- ================================================
+       COLOR PALETTE
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Color Palette</p>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 12px; font-weight: 600; color: var(--text-secondary);">Backgrounds</p>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--bg-primary);"></div>
+          <span class="swatch-name">--bg-primary<br>#FFFFFF</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--bg-secondary);"></div>
+          <span class="swatch-name">--bg-secondary<br>#F7FAFC</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--bg-tertiary);"></div>
+          <span class="swatch-name">--bg-tertiary<br>#EDF2F7</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 12px; font-weight: 600; color: var(--text-secondary);">Accents</p>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--accent-primary); border-color: var(--accent-primary);"></div>
+          <span class="swatch-name">--accent-primary<br>#FF6B35</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--accent-secondary); border-color: var(--accent-secondary);"></div>
+          <span class="swatch-name">--accent-secondary<br>#1B6CA8</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--accent-tertiary); border-color: var(--accent-tertiary);"></div>
+          <span class="swatch-name">--accent-tertiary<br>#00D9FF</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 12px; font-weight: 600; color: var(--text-secondary);">Text</p>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--text-primary); border-color: transparent;"></div>
+          <span class="swatch-name">--text-primary<br>#1A202C</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--text-secondary); border-color: transparent;"></div>
+          <span class="swatch-name">--text-secondary<br>#4A5568</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background: var(--text-tertiary); border-color: transparent;"></div>
+          <span class="swatch-name">--text-tertiary<br>#718096</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       TYPOGRAPHY
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Typography</p>
+    <div class="text-block">
+      <h1 class="text-h1">Heading Level One <span class="var-chip">--text-primary</span></h1>
+      <h2 class="text-h2">Heading Level Two <span class="var-chip">--text-primary</span></h2>
+      <h3 class="text-h3">Heading Level Three <span class="var-chip">--text-primary</span></h3>
+      <p class="text-body">
+        Body text uses <span class="var-chip">--text-secondary</span>. This is a paragraph of body copy that demonstrates readable text at standard document size. Spacing and line-height are natural.
+      </p>
+      <p class="text-small">
+        Small / caption text uses <span class="var-chip">--text-tertiary</span>. Used for metadata, timestamps, and supporting information.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <span class="text-accent-primary" style="font-weight: 700;">accent-primary</span>
+      <span class="text-accent-secondary" style="font-weight: 700;">accent-secondary</span>
+      <span class="text-accent-tertiary" style="font-weight: 700;">accent-tertiary</span>
+    </div>
+  </div>
+
+  <!-- ================================================
+       CARDS
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Cards — bg-tertiary</p>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-bar card-bar--primary"></div>
+        <span class="card-label">Category</span>
+        <h3 class="card-heading">Primary Card</h3>
+        <p class="card-body">Uses <code>var(--bg-tertiary)</code> background with <code>var(--border-color)</code> border. Content text uses secondary color.</p>
+        <p class="card-meta">Updated · just now</p>
+      </div>
+
+      <div class="card">
+        <div class="card-bar card-bar--secondary"></div>
+        <span class="card-label">Category</span>
+        <h3 class="card-heading">Secondary Card</h3>
+        <p class="card-body">Accent bar uses <code>var(--accent-secondary)</code>. Card remains on <code>var(--bg-tertiary)</code> to stay within the background scale.</p>
+        <p class="card-meta">Updated · 2 hours ago</p>
+      </div>
+
+      <div class="card">
+        <div class="card-bar card-bar--tertiary"></div>
+        <span class="card-label">Category</span>
+        <h3 class="card-heading">Tertiary Card</h3>
+        <p class="card-body">Accent bar uses <code>var(--accent-tertiary)</code>. All text tokens are used exactly as defined — primary, secondary, tertiary.</p>
+        <p class="card-meta">Updated · 1 day ago</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       STAT CARDS
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Stat Containers</p>
+    <div class="card-grid">
+
+      <div class="card" style="gap: 6px;">
+        <span class="card-label">Total Items</span>
+        <p class="stat stat--primary">1,240</p>
+        <p class="text-small">Displayed using <span class="var-chip">accent-primary</span></p>
+      </div>
+
+      <div class="card" style="gap: 6px;">
+        <span class="card-label">Active Users</span>
+        <p class="stat stat--secondary">348</p>
+        <p class="text-small">Displayed using <span class="var-chip">accent-secondary</span></p>
+      </div>
+
+      <div class="card" style="gap: 6px;">
+        <span class="card-label">Live Sessions</span>
+        <p class="stat stat--tertiary">89</p>
+        <p class="text-small">Displayed using <span class="var-chip">accent-tertiary</span></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       BUTTONS
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Buttons</p>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 14px; font-weight: 600; color: var(--text-secondary);">Filled</p>
+      <div class="btn-row">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-secondary">Secondary Button</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 14px; font-weight: 600; color: var(--text-secondary);">Outlined / Ghost</p>
+      <div class="btn-row">
+        <button class="btn btn-tertiary">Tertiary Outlined</button>
+        <button class="btn btn-ghost">Ghost Button</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <p class="text-small" style="margin-bottom: 14px; font-weight: 600; color: var(--text-secondary);">Sizes</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" style="padding: 7px 16px; font-size: 12px;">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;">Large</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       CONTAINERS / TEXT BLOCKS
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Text Blocks &amp; Containers</p>
+
+    <div class="two-col">
+
+      <!-- Container A -->
+      <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 12px;">
+        <span class="badge badge--primary">Featured</span>
+        <h3 class="text-h3">Container on bg-primary</h3>
+        <p class="text-body">This container sits on the primary background. Border uses <span class="var-chip">--border-color</span>. Inner background is <span class="var-chip">--bg-primary</span>.</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="badge">Tag One</span>
+          <span class="badge badge--outline-primary">Tag Two</span>
+        </div>
+        <button class="btn btn-primary" style="align-self: flex-start; margin-top: 4px;">Get Started</button>
+      </div>
+
+      <!-- Container B -->
+      <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 12px;">
+        <span class="badge badge--secondary">Info</span>
+        <h3 class="text-h3">Container on bg-tertiary</h3>
+        <p class="text-body">Nested inside the section (<span class="var-chip">--bg-secondary</span>), this container uses <span class="var-chip">--bg-tertiary</span> to create depth without adding new colors.</p>
+        <div style="display: flex; gap: 8px;">
+          <span class="badge">Default</span>
+          <span class="badge badge--secondary">Active</span>
+        </div>
+        <button class="btn btn-secondary" style="align-self: flex-start; margin-top: 4px;">Learn More</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       BADGES
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Badges</p>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+      <span class="badge">Default</span>
+      <span class="badge badge--primary">Primary</span>
+      <span class="badge badge--secondary">Secondary</span>
+      <span class="badge badge--outline-primary">Outlined Primary</span>
+      <span class="badge" style="border-color: var(--accent-tertiary); color: var(--accent-tertiary);">Tertiary Outline</span>
+    </div>
+  </div>
+
+  <!-- ================================================
+       DARK MODE REFERENCE BLOCK
+       ================================================ -->
+  <div class="section">
+    <p class="section-title">Dark Mode Variables (Reference — Not Applied)</p>
+    <p class="text-body" style="max-width: 560px; margin-bottom: 16px;">
+      The dark mode variables are defined separately under <code style="font-size: 13px; color: var(--text-tertiary);">.dark-mode</code> and do not override or replace light mode. They exist as a reference palette.
+    </p>
+    <div class="two-col">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="text-small" style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">Backgrounds</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #0F1419; flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-bg-primary: #0F1419</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #1A202C; flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-bg-secondary: #1A202C</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #2D3748; flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-bg-tertiary: #2D3748</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="text-small" style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">Text</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #FFFFFF; border: 1px solid var(--border-color); flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-text-primary: #FFFFFF</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #A0AEC0; flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-text-secondary: #A0AEC0</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #718096; flex-shrink: 0;"></div>
+          <span class="var-chip">--dark-text-tertiary: #718096</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       FOOTER TEXT BLOCK
+       ================================================ -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+    <p class="text-small">Design System · CSS Variables Only</p>
+    <div style="display: flex; gap: 16px;">
+      <span class="text-accent-primary" style="font-size: 13px; font-weight: 600;">#FF6B35</span>
+      <span class="text-accent-secondary" style="font-size: 13px; font-weight: 600;">#1B6CA8</span>
+      <span class="text-accent-tertiary" style="font-size: 13px; font-weight: 600;">#00D9FF</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

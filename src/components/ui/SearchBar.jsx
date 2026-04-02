@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftRight, Search } from 'lucide-react';
 import StationDropdown from './StationDropdown';
-import { Button } from './Button';
 
 export default function SearchBar({ onSearch, isSearching }) {
   const navigate = useNavigate();
@@ -10,7 +9,6 @@ export default function SearchBar({ onSearch, isSearching }) {
   const [toStation, setToStation] = useState('MUMBAI CENTRAL | MMCT');
   const [journeyDate, setJourneyDate] = useState('26 Mar');
 
-  // Strict Swap Logic
   const handleSwap = () => {
     const temp = fromStation;
     setFromStation(toStation);
@@ -31,94 +29,129 @@ export default function SearchBar({ onSearch, isSearching }) {
   const dates = ['26 Mar', '27 Mar', '28 Mar', '29 Mar'];
 
   return (
-    <div className="w-full relative z-40 bg-[#FFFFFF] rounded-[8px] border border-[#D1D5DB] p-4">
-       
-       <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row items-center gap-0 w-full mb-4">
-          
-          <div className="w-full lg:flex-1 relative">
-             <StationDropdown 
-               label="From" 
-               value={fromStation} 
-               onChange={setFromStation} 
-             />
-             
-             {/* Center Swap Button */}
-             <button 
-               type="button"
-               onClick={handleSwap}
-               className="hidden lg:flex absolute -right-[16px] top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-[#D1D5DB] rounded-full items-center justify-center text-[#6B7280] hover:bg-[#F5F7FA] hover:text-[#0B4F8A] shadow-sm transition-colors"
-               title="Swap Stations"
-             >
-               <ArrowLeftRight size={14} />
-             </button>
-          </div>
+    <div className="w-full relative z-40 rounded-2xl p-4" style={{ background: 'var(--bg-surface)' }}>
 
-          {/* Mobile Swap */}
-          <button 
-             type="button"
-             onClick={handleSwap}
-             className="flex lg:hidden w-8 h-8 my-2 bg-[#F9FAFB] border border-[#D1D5DB] rounded-full items-center justify-center text-[#6B7280]"
+      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row items-center gap-0 w-full mb-4">
+
+        <div className="w-full lg:flex-1 relative">
+          <StationDropdown label="From" value={fromStation} onChange={setFromStation} />
+
+          {/* Desktop swap */}
+          <button
+            type="button"
+            onClick={handleSwap}
+            className="hidden lg:flex absolute -right-[16px] top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full items-center justify-center shadow-sm transition-all duration-200"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--primary)';
+              e.currentTarget.style.color = 'var(--primary)';
+              e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)';
+              e.currentTarget.style.color = 'var(--text-muted)';
+              e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+            }}
+            title="Swap Stations"
           >
-             <ArrowLeftRight size={14} className="rotate-90" />
+            <ArrowLeftRight size={14} />
           </button>
+        </div>
 
-          <div className="w-full lg:flex-1 pl-0 lg:pl-[12px]">
-             <StationDropdown 
-               label="To" 
-               value={toStation} 
-               onChange={setToStation} 
-             />
-          </div>
+        {/* Mobile swap */}
+        <button
+          type="button"
+          onClick={handleSwap}
+          className="flex lg:hidden w-8 h-8 my-2 rounded-full items-center justify-center"
+          style={{
+            background: 'var(--bg-surface-2)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-muted)',
+          }}
+        >
+          <ArrowLeftRight size={14} className="rotate-90" />
+        </button>
 
-          <div className="w-full lg:w-auto flex items-center justify-between border border-[#D1D5DB] bg-[#F9FAFB] rounded-[4px] p-0.5 ml-0 lg:ml-4 mt-4 lg:mt-0 overflow-hidden">
-             {dates.map((d) => (
-               <div 
-                 key={d}
-                 onClick={() => setJourneyDate(d)}
-                 className={`px-4 py-3 cursor-pointer text-sm font-semibold text-center border-r last:border-0 border-[#D1D5DB] transition-colors ${journeyDate === d ? 'bg-[#0B4F8A] text-white' : 'text-[#1F2937] hover:bg-gray-100'}`}
-               >
-                 {d}
-               </div>
-             ))}
-          </div>
+        <div className="w-full lg:flex-1 pl-0 lg:pl-[12px]">
+          <StationDropdown label="To" value={toStation} onChange={setToStation} />
+        </div>
 
-          <div className="w-full lg:w-[150px] ml-0 lg:ml-4 mt-4 lg:mt-0 h-full self-stretch flex">
-             <Button 
-               type="submit" 
-               variant="primary"
-               isLoading={isSearching}
-               className="w-full h-full rounded-[4px] text-base"
-               style={{ height: 'auto' }}
-             >
-               SEARCH
-             </Button>
-          </div>
-       </form>
+        {/* Date pills */}
+        <div
+          className="w-full lg:w-auto flex items-center justify-between rounded-lg p-0.5 ml-0 lg:ml-4 mt-4 lg:mt-0 overflow-hidden"
+          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}
+        >
+          {dates.map((d) => (
+            <div
+              key={d}
+              onClick={() => setJourneyDate(d)}
+              className="px-4 py-3 cursor-pointer text-sm font-semibold text-center transition-all duration-200"
+              style={{
+                background: journeyDate === d ? 'var(--primary)' : 'transparent',
+                color: journeyDate === d ? '#FFFFFF' : 'var(--text-primary)',
+                borderRadius: journeyDate === d ? '6px' : '0',
+              }}
+              onMouseEnter={(e) => {
+                if (journeyDate !== d) e.currentTarget.style.background = 'var(--bg-hover)';
+              }}
+              onMouseLeave={(e) => {
+                if (journeyDate !== d) e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              {d}
+            </div>
+          ))}
+        </div>
 
-       <div className="flex flex-wrap items-center gap-6 pt-3 border-t border-[#F5F7FA]">
-          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#475569] font-medium">
-             <input type="checkbox" className="accent-[#0B4F8A] w-4 h-4" /> AC Only
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#475569] font-medium">
-             <input type="checkbox" className="accent-[#0B4F8A] w-4 h-4" /> Confirmed Seats
-          </label>
-          
-          <div className="flex items-center gap-2 ml-auto">
-             <select className="bg-transparent border border-[#D1D5DB] text-[13px] text-[#475569] rounded px-2 py-1 outline-none">
-                <option>All Classes</option>
-                <option>1A (First AC)</option>
-                <option>2A (Second AC)</option>
-                <option>3A (Third AC)</option>
-                <option>SL (Sleeper)</option>
-             </select>
-             <select className="bg-transparent border border-[#D1D5DB] text-[13px] text-[#475569] rounded px-2 py-1 outline-none">
-                <option>General Quota</option>
-                <option>Tatkal</option>
-                <option>Ladies</option>
-             </select>
-          </div>
-       </div>
+        {/* Search button */}
+        <div className="w-full lg:w-[140px] ml-0 lg:ml-4 mt-4 lg:mt-0">
+          <button
+            type="submit"
+            disabled={isSearching}
+            className="bp-btn bp-btn--primary w-full py-3 text-[14px] font-bold tracking-wide rounded-lg"
+          >
+            {isSearching ? 'Searching…' : 'SEARCH'}
+          </button>
+        </div>
+      </form>
 
+      {/* Filters row */}
+      <div
+        className="flex flex-wrap items-center gap-6 pt-3 border-t"
+        style={{ borderColor: 'var(--border-light)' }}
+      >
+        <label className="flex items-center gap-2 cursor-pointer text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+          <input type="checkbox" className="w-4 h-4" style={{ accentColor: 'var(--primary)' }} /> AC Only
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+          <input type="checkbox" className="w-4 h-4" style={{ accentColor: 'var(--primary)' }} /> Confirmed Seats
+        </label>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <select
+            className="text-[13px] rounded-lg px-2.5 py-1.5 outline-none font-medium"
+            style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+          >
+            <option>All Classes</option>
+            <option>1A (First AC)</option>
+            <option>2A (Second AC)</option>
+            <option>3A (Third AC)</option>
+            <option>SL (Sleeper)</option>
+          </select>
+          <select
+            className="text-[13px] rounded-lg px-2.5 py-1.5 outline-none font-medium"
+            style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+          >
+            <option>General Quota</option>
+            <option>Tatkal</option>
+            <option>Ladies</option>
+          </select>
+        </div>
+      </div>
     </div>
   );
 }
