@@ -21,7 +21,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/api/auth/google/callback',
+      callbackURL: 'https://bhartpath-api.onrender.com/api/auth/google/callback',
       proxy: true,
       state: false,
     },
