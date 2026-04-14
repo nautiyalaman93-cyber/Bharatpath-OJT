@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftRight, Search } from 'lucide-react';
+import { ArrowLeftRight, Search, CalendarDays } from 'lucide-react';
 import StationDropdown from './StationDropdown';
+import DateSelector from './DateSelector';
 
 export default function SearchBar({ onSearch, isSearching }) {
   const navigate = useNavigate();
   const [fromStation, setFromStation] = useState('NEW DELHI | NDLS');
   const [toStation, setToStation] = useState('MUMBAI CENTRAL | MMCT');
-  // Generate 4 dates starting from today
+  // Generate 3 quick dates starting from today
   const getUpcomingDates = () => {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return [0, 1, 2, 3].map(offset => {
+    return [0, 1, 2].map(offset => {
       const d = new Date();
       d.setDate(d.getDate() + offset);
       return `${d.getDate()} ${months[d.getMonth()]}`;
@@ -19,6 +20,21 @@ export default function SearchBar({ onSearch, isSearching }) {
   const dates = getUpcomingDates();
 
   const [journeyDate, setJourneyDate] = useState(dates[0]);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const calendarRef = useRef(null);
+
+  // Close calendar on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const isQuickDate = dates.includes(journeyDate);
 
   const handleSwap = () => {
     const temp = fromStation;
@@ -89,15 +105,15 @@ export default function SearchBar({ onSearch, isSearching }) {
           <StationDropdown label="To" value={toStation} onChange={setToStation} />
         </div>
 
-        {/* Date pills */}
+        {/* Date pills + Select Date */}
         <div
-          className="w-full lg:w-auto flex items-center justify-between rounded-lg p-0.5 ml-0 lg:ml-4 mt-4 lg:mt-0 overflow-hidden"
+          className="w-full lg:w-auto flex items-center justify-between rounded-lg p-0.5 ml-0 lg:ml-4 mt-4 lg:mt-0 overflow-visible relative"
           style={{ border: '1px solid var(--border)', background: 'var(--bg-surface-2)' }}
         >
           {dates.map((d) => (
             <div
               key={d}
-              onClick={() => setJourneyDate(d)}
+              onClick={() => { setJourneyDate(d); setShowCalendar(false); }}
               className="px-4 py-3 cursor-pointer text-sm font-semibold text-center transition-all duration-200"
               style={{
                 background: journeyDate === d ? 'var(--primary)' : 'transparent',
@@ -114,6 +130,39 @@ export default function SearchBar({ onSearch, isSearching }) {
               {d}
             </div>
           ))}
+
+          {/* Select Date button */}
+          <div ref={calendarRef} className="relative">
+            <div
+              onClick={() => setShowCalendar(!showCalendar)}
+              className="px-3 py-3 cursor-pointer text-sm font-semibold text-center transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap"
+              style={{
+                background: !isQuickDate ? 'var(--primary)' : 'transparent',
+                color: !isQuickDate ? '#FFFFFF' : 'var(--text-primary)',
+                borderRadius: !isQuickDate ? '6px' : '0',
+              }}
+              onMouseEnter={(e) => {
+                if (isQuickDate) e.currentTarget.style.background = 'var(--bg-hover)';
+              }}
+              onMouseLeave={(e) => {
+                if (isQuickDate) e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <CalendarDays size={14} />
+              {!isQuickDate ? journeyDate : 'More'}
+            </div>
+
+            {/* Calendar popup */}
+            {showCalendar && (
+              <div className="absolute top-[110%] right-0 z-50">
+                <DateSelector
+                  label="Journey Date"
+                  value={journeyDate}
+                  onChange={(val) => { setJourneyDate(val); setShowCalendar(false); }}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Search button */}
