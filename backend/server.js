@@ -14,6 +14,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
+const session = require('express-session');
 
 // Load environment variables FIRST before anything else
 dotenv.config();
@@ -54,8 +55,17 @@ app.use(
 // Parse incoming JSON request bodies
 app.use(express.json());
 
+// Session support (required for Passport OAuth flow)
+app.use(session({
+  secret: process.env.JWT_SECRET || 'bharatpath_session_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }
+}));
+
 // Initialize Passport (needed even for JWT strategy)
 app.use(passport.initialize());
+app.use(passport.session());
 
 // -----------------------------------------------------------------------
 // Routes
