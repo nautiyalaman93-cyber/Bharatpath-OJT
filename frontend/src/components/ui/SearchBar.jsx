@@ -7,7 +7,18 @@ export default function SearchBar({ onSearch, isSearching }) {
   const navigate = useNavigate();
   const [fromStation, setFromStation] = useState('NEW DELHI | NDLS');
   const [toStation, setToStation] = useState('MUMBAI CENTRAL | MMCT');
-  const [journeyDate, setJourneyDate] = useState('26 Mar');
+  // Generate 4 dates starting from today
+  const getUpcomingDates = () => {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return [0, 1, 2, 3].map(offset => {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      return `${d.getDate()} ${months[d.getMonth()]}`;
+    });
+  };
+  const dates = getUpcomingDates();
+
+  const [journeyDate, setJourneyDate] = useState(dates[0]);
 
   const handleSwap = () => {
     const temp = fromStation;
@@ -25,8 +36,6 @@ export default function SearchBar({ onSearch, isSearching }) {
       }
     }
   };
-
-  const dates = ['26 Mar', '27 Mar', '28 Mar', '29 Mar'];
 
   return (
     <div className="w-full relative z-40 rounded-2xl p-4" style={{ background: 'var(--bg-surface)' }}>
