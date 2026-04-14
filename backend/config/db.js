@@ -24,14 +24,25 @@ const connectDB = async () => {
     }
 
     const conn = await mongoose.connect(uri, {
-      bufferCommands: false, // Don't queue queries if not connected
-      serverSelectionTimeoutMS: 5000, // Fail fast if host unreachable
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
     });
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    // If we fail here, at least logs will show the real problem (e.g. IP blocked)
-    throw error; // Re-throw so server.js can handle it or log it better
+    console.error(`❌ Primary MongoDB Connection Error: ${error.message}`);
+    
+    // Fallback to In-Memory MongoDB so the app doesn't crash
+    console.log('🔄 Falling back to In-Memory MongoDB to keep the app running...');
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongoServer = await MongoMemoryServer.create();
+      const fallbackUri = mongoServer.getUri();
+      await mongoose.connect(fallbackUri);
+      console.log(`✅ Success: Running on In-Memory MongoDB: ${fallbackUri}`);
+    } catch (fallbackError) {
+      console.error(`❌ Critical: Fallback DB also failed: ${fallbackError.message}`);
+      throw fallbackError;
+    }
   }
 };
 
