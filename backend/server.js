@@ -36,6 +36,9 @@ const alertRoutes = require('./routes/alertRoutes');
 // Initialize Express app
 const app = express();
 
+// Trust Render's proxy to handle HTTPS correctly
+app.set('trust proxy', 1);
+
 // -----------------------------------------------------------------------
 // Middleware Setup
 // -----------------------------------------------------------------------
