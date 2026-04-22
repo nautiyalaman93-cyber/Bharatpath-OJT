@@ -570,6 +570,7 @@ export default function SeatExchange() {
                   </div>
                 )}
               </form>
+              </div>
             </div>
           </div>
         </section>
