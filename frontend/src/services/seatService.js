@@ -21,9 +21,10 @@ const getAuthHeaders = () => {
 };
 
 export const seatService = {
-  getRequests: async () => {
+  getRequests: async (trainNumber) => {
     try {
-      const response = await fetch(`${BASE_URL}/api/seats/all`);
+      const url = trainNumber ? `${BASE_URL}/api/seats/all?trainNumber=${encodeURIComponent(trainNumber)}` : `${BASE_URL}/api/seats/all`;
+      const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch seat requests');
       const data = await response.json();
       return data.data || [];

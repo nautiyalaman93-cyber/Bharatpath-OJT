@@ -44,7 +44,11 @@ const createRequest = async (req, res) => {
 // -----------------------------------------------------------------------
 const getAllRequests = async (req, res) => {
   try {
-    const requests = await SeatRequest.find({ status: 'open' })
+    const filter = { status: 'open' };
+    if (req.query.trainNumber) {
+      filter.trainNumber = req.query.trainNumber;
+    }
+    const requests = await SeatRequest.find(filter)
       .populate('user', 'name avatar')
       .sort({ createdAt: -1 });
 
@@ -108,6 +112,10 @@ const sendMessage = async (req, res) => {
   try {
     const request = await SeatRequest.findById(req.params.id);
     if (!request) return res.status(404).json({ message: 'Seat request not found.' });
+
+    if (request.user.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: 'You cannot send a message to yourself.' });
+    }
 
     const message = await Message.create({
       seatRequest: request._id,

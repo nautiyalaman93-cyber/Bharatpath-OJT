@@ -29,6 +29,7 @@ export default function SeatExchange() {
   /* ── Form state ── */
   const [myPnr, setMyPnr] = useState('');
   const [mySeat, setMySeat] = useState('');
+  const [myCurrentBerth, setMyCurrentBerth] = useState('Lower Berth');
   const [myTarget, setMyTarget] = useState('Upper Berth');
   const [postSuccess, setPostSuccess] = useState(false);
 
@@ -51,7 +52,7 @@ export default function SeatExchange() {
     
     setFetchLoading(true);
     try {
-      const data = await seatService.getRequests();
+      const data = await seatService.getRequests(trainNumber);
       setAllRequests(data);
     } catch (err) {
       console.error(err);
@@ -90,13 +91,14 @@ export default function SeatExchange() {
         trainNumber,
         journeyDate: new Date().toISOString().split('T')[0],
         coach: coachValue,
-        currentSeat: mySeat,
+        currentSeat: `${mySeat.trim()} (${myCurrentBerth})`,
         wantedSeat: myTarget
       });
       
       setPostSuccess(true);
       setMyPnr('');
       setMySeat('');
+      setMyCurrentBerth('Lower Berth');
       handleSearch();
       setTimeout(() => setPostSuccess(false), 3000);
     } catch (err) {
@@ -333,15 +335,19 @@ export default function SeatExchange() {
                             </div>
                           </div>
 
-                          <button
-                            className="bp-btn bp-btn--outline w-full sm:w-auto px-6 py-2.5 text-[13px] font-bold shrink-0"
-                            onClick={() => {
-                              if (!user) return alert('Please login to connect');
-                              setSelectedReq(req);
-                            }}
-                          >
-                            Connect
-                          </button>
+                          {user?._id !== req.user?._id ? (
+                            <button
+                              className="bp-btn bp-btn--outline w-full sm:w-auto px-6 py-2.5 text-[13px] font-bold shrink-0"
+                              onClick={() => {
+                                if (!user) return alert('Please login to connect');
+                                setSelectedReq(req);
+                              }}
+                            >
+                              Connect
+                            </button>
+                          ) : (
+                            <span className="text-[12px] font-bold text-slate-400 border border-slate-200 rounded-lg px-4 py-2 self-center">Your Request</span>
+                          )}
                         </div>
                       ))
                     ) : (
@@ -510,11 +516,27 @@ export default function SeatExchange() {
                   <input
                     className="bp-input"
                     type="text"
-                    placeholder="e.g. B4 | Seat 45 (Lower)"
+                    placeholder="e.g. B4 | 45"
                     value={mySeat}
                     onChange={(e) => setMySeat(e.target.value)}
                     required
                   />
+                </div>
+
+                <div className="bp-input-wrapper">
+                  <label className="bp-label">Current Berth</label>
+                  <select
+                    className="bp-input"
+                    style={{ cursor: 'pointer' }}
+                    value={myCurrentBerth}
+                    onChange={(e) => setMyCurrentBerth(e.target.value)}
+                  >
+                    <option>Upper Berth</option>
+                    <option>Middle Berth</option>
+                    <option>Lower Berth</option>
+                    <option>Side Lower</option>
+                    <option>Side Upper</option>
+                  </select>
                 </div>
 
                 <div className="bp-input-wrapper">
