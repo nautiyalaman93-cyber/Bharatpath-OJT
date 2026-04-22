@@ -34,6 +34,11 @@ const protect = async (req, res, next) => {
       // Attach the user's data (without password) to the request
       req.user = await User.findById(decoded.id).select('-__v');
 
+      // If user no longer exists in DB (e.g. deleted or was in in-memory DB)
+      if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized, user not found. Please login again.' });
+      }
+
       next(); // Move on to the actual route handler
     } catch (error) {
       return res.status(401).json({ message: 'Not authorized, token failed.' });
