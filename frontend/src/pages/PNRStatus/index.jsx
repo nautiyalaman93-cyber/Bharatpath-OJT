@@ -4,11 +4,13 @@
  */
 
 import { useState } from 'react';
-import { Search, User, CheckCircle, ArrowRight } from 'lucide-react';
-
+import { Search, CheckCircle, ArrowRight, RefreshCcw } from 'lucide-react';
 import { api } from '../../services/api';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function PNRStatus() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [pnr, setPnr] = useState('1234567890');
   const [isSearching, setIsSearching] = useState(false);
   const [statusData, setStatusData] = useState(null);
@@ -30,30 +32,31 @@ export default function PNRStatus() {
   return (
     <div className="w-full pb-16 min-h-screen" style={{ background: 'var(--bg-page)' }}>
 
-      {/* ═══ Header Banner ═══ */}
-      <section
-        className="relative overflow-hidden py-12 mb-10 anim-fade-in"
-        style={{
-          background: 'linear-gradient(135deg, #020617 0%, #0B3D6B 45%, #1E3A8A 100%)',
-        }}
-      >
-        {/* Subtle glow */}
+      {/* ═══ Header Banner — Theme Aware ═══ */}
+      <section className="relative overflow-hidden py-12 mb-10 anim-fade-in bp-hero-dark">
+        {/* Ambient glow */}
         <div
           className="absolute top-[-30%] right-[-10%] w-[40%] h-[160%] rounded-full blur-[100px] pointer-events-none"
-          style={{ background: 'rgba(255,107,0,0.06)' }}
+          style={{ background: isDark ? 'rgba(255,140,66,0.06)' : 'rgba(224,90,0,0.08)' }}
         />
+        {!isDark && (
+          <div
+            className="absolute bottom-[-30%] left-[-10%] w-[50%] h-[160%] rounded-full blur-[120px] pointer-events-none"
+            style={{ background: 'rgba(30,136,229,0.05)' }}
+          />
+        )}
 
         <div className="max-w-[1050px] mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
           <div className="text-center md:text-left anim-slide-left">
+            <div className="bp-section-label mb-3"><Search size={11} /> PNR Lookup</div>
             <h1
-              className="text-2xl font-bold text-white tracking-wide mb-1.5 flex items-center justify-center md:justify-start gap-2.5"
-              style={{ fontFamily: "'Poppins', sans-serif" }}
+              className="text-2xl font-bold tracking-wide mb-1.5 flex items-center justify-center md:justify-start gap-2.5"
+              style={{ fontFamily: "'Poppins', sans-serif", color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
             >
-              <Search size={22} className="text-[#93C5FD]" />
               Check PNR Status
             </h1>
-            <p className="text-[14px] text-[#CBD5E1] font-medium">
-              Get accurate probability metrics and current tracking.
+            <p className="text-[14px] font-medium" style={{ color: isDark ? '#CBD5E1' : 'var(--text-secondary)' }}>
+              Live booking status, passenger info, and chart preparation.
             </p>
           </div>
 

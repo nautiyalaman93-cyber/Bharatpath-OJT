@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 import {
   User, RefreshCcw, AlertTriangle, ArrowRightLeft,
   Clock, Info, Search, Train, CheckCircle2, XCircle,
-  MessageSquare, Send, ChevronDown, ChevronUp, FileText, Frown, 
+  MessageSquare, Send, ChevronDown, ChevronUp, FileText, Frown,
   Trash2
 } from 'lucide-react';
 
 import { seatService } from '../../services/seatService';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function SeatExchange() {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [trainNumber, setTrainNumber] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -211,18 +214,50 @@ export default function SeatExchange() {
   }, [expandedReq]);
 
   return (
-    <main className="min-h-screen pt-[120px] pb-[80px]">
-      <div className="container anim-slide-down">
-        
-        {/* ═══ Hero Header ═══ */}
-        <section className="hero" style={{ textAlign: 'center', padding: '0 0 60px', maxWidth: '800px', margin: '0 auto' }}>
-          <h1 className="hero-h1">
-            P2P <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Seat</span> Exchange
-          </h1>
-          <p style={{ margin: '0', color: 'var(--text-secondary)', fontSize: '18px', lineHeight: '1.6' }}>
-            Find co-passengers on the same train and negotiate seat swaps instantly. Connect directly, with complete privacy.
-          </p>
-        </section>
+    <main className="min-h-screen pb-[80px]" style={{ background: 'var(--bg-page)' }}>
+
+      {/* ═══ Hero Banner — Theme Aware ═══ */}
+      <section className="relative overflow-hidden py-12 mb-10 bp-hero-dark">
+        <div
+          className="absolute top-[-30%] left-[-10%] w-[40%] h-[160%] rounded-full blur-[100px] pointer-events-none"
+          style={{ background: isDark ? 'rgba(255,140,66,0.05)' : 'rgba(224,90,0,0.07)' }}
+        />
+        <div
+          className="absolute bottom-[-20%] right-[-5%] w-[35%] h-[130%] rounded-full blur-[80px] pointer-events-none"
+          style={{ background: isDark ? 'rgba(139,92,246,0.04)' : 'rgba(139,92,246,0.05)' }}
+        />
+
+        <div className="max-w-[1050px] mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left anim-slide-left">
+            <div className="bp-section-label mb-3"><ArrowRightLeft size={11} /> P2P Exchange</div>
+            <h1
+              className="text-2xl font-bold mb-1.5"
+              style={{ fontFamily: "'Poppins', sans-serif", color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
+            >
+              Seat Swap Exchange
+            </h1>
+            <p className="text-[14px] font-medium" style={{ color: isDark ? 'rgba(232,221,212,0.70)' : 'var(--text-secondary)' }}>
+              Find co-passengers willing to swap berths. Verified via PNR &amp; GPS.
+            </p>
+          </div>
+
+          {/* Quick stats */}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            {[
+              { label: 'Active Requests', value: allRequests.length },
+              { label: 'Open Today', value: allRequests.filter(r => new Date(r.createdAt).toDateString() === new Date().toDateString()).length },
+            ].map((s, i) => (
+              <div key={i} className="text-center px-5 py-3 rounded-xl" style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(224,90,0,0.06)', border: '1px solid var(--border)' }}>
+                <div className="text-[22px] font-extrabold" style={{ color: 'var(--primary)', fontFamily: "'Poppins', sans-serif" }}>{s.value}</div>
+                <div className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: isDark ? 'rgba(232,221,212,0.50)' : 'var(--text-muted)' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      <div className="container anim-fade-in">
 
         {/* ═══ Search Section ═══ */}
         <section className="search-section" style={{ maxWidth: '700px', margin: '0 auto 60px' }}>

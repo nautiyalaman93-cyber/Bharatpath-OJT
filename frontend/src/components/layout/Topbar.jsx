@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Train, LogIn, LogOut, User } from 'lucide-react';
+import { Train, LogIn, User } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,113 +15,114 @@ export default function Topbar() {
   };
 
   const links = [
-    { path: '/',              label: 'Home' },
-    { path: '/pnr-status',   label: 'PNR Status' },
-    { path: '/live-tracking', label: 'Live Status' },
-    { path: '/seat-exchange', label: 'Seat Swap' },
-    { path: '/sos',           label: 'SOS' },
+    { path: '/',               label: 'Home' },
+    { path: '/pnr-status',    label: 'PNR' },
+    { path: '/live-tracking',  label: 'Live Status' },
+    { path: '/seat-exchange',  label: 'Seat Swap' },
+    { path: '/sos',            label: 'SOS', isDanger: true },
   ];
 
   return (
-    <header
-      style={{
-        background: 'var(--bg-topbar)',
-        borderBottom: '1px solid var(--border)',
-      }}
-      className="w-full sticky top-0 z-50"
-    >
-      <div className="max-w-[1100px] mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="w-full sticky top-0 z-50 bp-topbar-glass" style={{ borderBottom: '1px solid var(--border)' }}>
+      <div className="max-w-[1200px] mx-auto px-5 h-[62px] flex items-center justify-between gap-6">
 
         {/* ── Logo ── */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
           <div
             style={{
-              background: 'var(--primary)',
+              background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))',
               boxShadow: 'var(--shadow-primary)',
             }}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white transition-transform duration-200 group-hover:scale-105"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-all duration-300 group-hover:scale-105 group-hover:rotate-[-4deg]"
           >
-            <Train size={18} />
+            <Train size={18} strokeWidth={2.5} />
           </div>
           <span
-            style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
-            className="text-[18px] font-bold tracking-tight"
+            className="text-[19px] font-bold tracking-tight"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              color: 'var(--text-heading)',
+              letterSpacing: '-0.3px',
+            }}
           >
-            BharatPath
+            Bharat
+            <span style={{ color: 'var(--primary)' }}>Path</span>
           </span>
         </Link>
 
-        {/* ── Nav + Toggle + Auth ── */}
-        <div className="flex items-center gap-5">
-          <nav className="hidden md:flex items-center gap-6">
-            {links.map((link) => {
-              const isActive = location.pathname === link.path;
-              const isSOS = link.path === '/sos';
-
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  style={{
-                    color: isSOS
-                      ? 'var(--danger)'
-                      : isActive
-                      ? 'var(--primary)'
-                      : 'var(--text-secondary)',
-                    borderBottom: isActive && !isSOS
-                      ? '2.5px solid var(--primary)'
-                      : '2.5px solid transparent',
-                    paddingTop: '20px',
-                    paddingBottom: '18px',
-                    fontWeight: isActive ? '700' : '500',
-                  }}
-                  className={`text-[13.5px] uppercase tracking-wide transition-all duration-200 hover:opacity-75 ${!isActive ? 'bp-link-underline' : ''}`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center gap-4 border-l pl-4" style={{ borderColor: 'var(--border)' }}>
-            {/* ── Theme Toggle ── */}
-            <button
-              id="theme-toggle-btn"
-              type="button"
-              onClick={toggleTheme}
-              className={`theme-toggle ${isDark ? 'theme-toggle--active' : ''}`}
-              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              <span className="theme-toggle__track">
-                <span className="theme-toggle__thumb" />
-              </span>
-            </button>
-
-            {/* ── Auth Button ── */}
-            {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end hidden sm:flex">
-                  <span className="text-[12px] font-bold" style={{ color: 'var(--text-primary)' }}>{user.name}</span>
-                  <button onClick={logout} className="text-[10px] font-bold uppercase tracking-wider text-red-500 hover:underline">Logout</button>
-                </div>
-                {user.avatar ? (
-                  <img src={user.avatar} alt="User" className="w-8 h-8 rounded-full border" style={{ borderColor: 'var(--border)' }} />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center border" style={{ borderColor: 'var(--border)' }}>
-                    <User size={16} className="text-slate-500" />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={handleLogin}
-                className="bp-btn bp-btn--primary px-4 py-1.5 text-[12px] font-bold flex items-center gap-2"
+        {/* ── Nav Pills ── */}
+        <nav className="hidden md:flex items-center gap-1">
+          {links.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`bp-nav-pill ${isActive ? 'bp-nav-active' : ''} ${link.isDanger ? 'bp-nav-danger' : ''}`}
               >
-                <LogIn size={14} />
-                LOGIN
-              </button>
-            )}
-          </div>
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* ── Right: Toggle + Auth ── */}
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle */}
+          <button
+            id="theme-toggle-btn"
+            type="button"
+            onClick={toggleTheme}
+            className={`theme-toggle ${isDark ? 'theme-toggle--active' : ''}`}
+            title={isDark ? 'Switch to Light' : 'Switch to Dark'}
+            aria-label="Toggle theme"
+          >
+            <span className="theme-toggle__track">
+              <span className="theme-toggle__thumb" />
+            </span>
+          </button>
+
+          {/* Auth */}
+          {user ? (
+            <div className="flex items-center gap-2.5">
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-8 h-8 rounded-full border-2"
+                  style={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 2px var(--primary-glow)' }}
+                />
+              ) : (
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                  style={{ background: 'var(--primary)' }}
+                >
+                  {user.name?.charAt(0).toUpperCase() || <User size={14} />}
+                </div>
+              )}
+              <div className="hidden sm:flex flex-col">
+                <span className="text-[12px] font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
+                  {user.name?.split(' ')[0]}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-[10px] font-bold uppercase tracking-wider text-left hover:underline"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="bp-btn bp-btn--primary"
+              style={{ padding: '7px 16px', fontSize: '13px', borderRadius: '9px', gap: '6px' }}
+            >
+              <LogIn size={14} strokeWidth={2.5} />
+              Login
+            </button>
+          )}
         </div>
       </div>
     </header>
