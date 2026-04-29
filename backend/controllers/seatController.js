@@ -133,6 +133,15 @@ const createRequest = async (req, res) => {
 // -----------------------------------------------------------------------
 const getAllRequests = async (req, res) => {
   try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    // Auto-close expired requests (where journeyDate < today)
+    // Note: This logic assumes journeyDate is in YYYY-MM-DD or YYYYMMDD format that is comparable
+    await SeatRequest.updateMany(
+      { journeyDate: { $lt: todayStr }, status: 'open' },
+      { status: 'closed' }
+    );
+
     const filter = { status: 'open' };
     if (req.query.trainNumber) {
       filter.trainNumber = req.query.trainNumber;

@@ -29,101 +29,19 @@ export default function Sidebar() {
 
   return (
     <aside
+      className={`fixed top-0 left-0 h-screen z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'w-64' : 'w-[80px]'} bp-glass`}
       style={{
-        background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border)',
-        color: 'var(--text-primary)',
       }}
-      className="w-64 flex flex-col h-full overflow-y-auto z-20"
     >
-      {/* Logo */}
-      <div
-        style={{ borderBottom: '1px solid var(--border-light)' }}
-        className="p-6 flex items-center gap-3"
-      >
-        <div
-          style={{
-            background: 'var(--primary)',
-            boxShadow: 'var(--shadow-primary)',
-          }}
-          className="p-2 rounded-xl"
-        >
-          <Route className="text-white" size={22} />
-        </div>
-        <h2
-          style={{
-            color: 'var(--primary)',
-            fontWeight: 800,
-            letterSpacing: '-0.04em'
-          }}
-          className="text-xl"
-        >
-          BHARATPATH
-        </h2>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1.5">
-        <div
-          style={{ color: 'var(--text-muted)' }}
-          className="text-xs font-semibold uppercase tracking-wider mb-4 px-4 mt-2"
-        >
-          Main Menu
-        </div>
-
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === '/'}
-            style={({ isActive }) =>
-              isActive
-                ? item.isDanger
-                  ? {
-                      background: 'var(--danger-bg)',
-                      color: 'var(--danger)',
-                      border: '1px solid var(--danger-border)',
-                    }
-                  : {
-                      background: 'var(--primary)',
-                      color: 'var(--text-inverse)',
-                      boxShadow: 'var(--shadow-primary)',
-                    }
-                : {
-                    color: 'var(--text-secondary)',
-                    background: 'transparent',
-                  }
-            }
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
-                !isActive ? 'hover:bg-[var(--bg-hover)] hover:opacity-90' : ''
-              }`
-            }
+      <div className="flex flex-col h-full relative">
+        
+        {/* Surgical Logo Section */}
+        <div className="h-[72px] flex items-center px-5 border-b border-[var(--border)] overflow-hidden">
+          <div 
+            className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 anim-rotate-in"
+            style={{ background: 'linear-gradient(135deg, var(--primary), #FF8C42)' }}
           >
-            {({ isActive }) => (
-              <>
-                <item.icon
-                  size={19}
-                  style={{
-                    color: isActive
-                      ? 'inherit'
-                      : item.isDanger
-                      ? 'var(--danger)'
-                      : 'var(--text-muted)',
-                  }}
-                />
-                <span>{item.name}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* Footer */}
-      <div
-        style={{
-          borderTop: '1px solid var(--border-light)',
-          color: 'var(--text-muted)',
         }}
         className="p-6 text-xs text-center"
       >

@@ -249,7 +249,7 @@ export default function SeatExchange() {
             ].map((s, i) => (
               <div key={i} className="text-center px-5 py-3 rounded-lg" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: '1px solid var(--border)' }}>
                 <div className="text-[22px] font-black tracking-tighter" style={{ color: 'var(--primary)' }}>{s.value}</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest opacity-50" style={{ color: 'var(--text-muted)' }}>{s.label}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'var(--text-secondary)' }}>{s.label}</div>
               </div>
             ))}
           </div>

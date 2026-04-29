@@ -43,7 +43,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-full min-h-screen" style={{ background: 'var(--bg-page)' }}>
+    <>
+      <div className="bp-bg-pattern" />
+      <div className="absolute top-0 left-0 w-full h-[600px] pointer-events-none overflow-hidden opacity-50">
+        <div className="bp-particle bp-particle--1" />
+        <div className="bp-particle bp-particle--2" />
+        <div className="bp-particle bp-particle--3" />
+        <div className="bp-particle bp-particle--4" />
+        <div className="bp-particle bp-particle--5" />
+      </div>
 
       {/* ═══ COMPACT HERO — Surgical Layout ═══ */}
       <section
@@ -83,13 +91,13 @@ export default function Home() {
 
           {/* Headline — High-end typography */}
           <h1
-            className="text-[42px] md:text-[56px] font-extrabold leading-[1.05] mb-5 max-w-[700px]"
+            className="text-[48px] md:text-[68px] font-extrabold leading-[0.95] mb-6 max-w-[800px] anim-slide-left"
             style={{
               color: 'var(--text-heading)',
-              letterSpacing: '-0.04em',
+              letterSpacing: '-0.05em',
             }}
           >
-            Real-time coordination for the <span style={{ color: 'var(--primary)' }}>Indian traveler.</span>
+            Real-time <span className="bp-gradient-text">coordination</span> for the <span className="bp-glow-text" style={{ color: 'var(--primary)' }}>Indian traveler.</span>
           </h1>
 
           <p
@@ -100,12 +108,10 @@ export default function Home() {
             Engineered for precision, designed for humans.
           </p>
 
-          {/* Search bar — flush with hero bottom */}
+          {/* Search bar — glass effect */}
           <div
-            className="rounded-t-2xl overflow-visible translate-y-[1px]"
+            className="rounded-t-2xl overflow-visible translate-y-[1px] bp-glass anim-fade-up anim-delay-2"
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
               borderBottom: 'none',
               boxShadow: 'var(--shadow-lg)',
             }}
@@ -202,6 +208,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

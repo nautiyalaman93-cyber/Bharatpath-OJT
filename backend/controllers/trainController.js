@@ -151,34 +151,62 @@ const getConnectingJourneys = async (req, res) => {
     return res.status(400).json({ message: 'Please provide from and to query params.' });
   }
 
+  // Extract codes: "NEW DELHI | NDLS" -> "NDLS"
+  const fromCode = from.split(' | ')[1] || from;
+  const toCode = to.split(' | ')[1] || to;
+  const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+
+  try {
+    // API First: Try searching for direct trains first
+    console.log(`🔄 API First: Searching direct trains for connecting view (${fromCode} -> ${toCode})`);
+    const directData = await fetchWithKeyRotation(`/api/v3/trainBetweenStations?fromStationCode=${fromCode}&toStationCode=${toCode}&dateOfJourney=${today}`);
+    
+    if (directData && directData.data && directData.data.length > 0) {
+      // If we found direct trains, we can present them as the primary option
+      const formattedDirect = directData.data.slice(0, 2).map((t, idx) => ({
+        label: `Direct Option ${idx + 1}: ${t.trainName}`,
+        reliability: 'Highest',
+        totalDuration: t.duration || 'Variable',
+        legs: [
+          { train: `${t.trainNumber} ${t.trainName}`, from: fromCode, to: toCode, time: `${t.departure} – ${t.arrival}` },
+        ],
+        isDirect: true
+      }));
+      return res.json({ success: true, data: formattedDirect });
+    }
+  } catch (error) {
+    console.warn('Connecting Journeys API Error (Direct Search):', error.message);
+  }
+
+  // Fallback / Smart Mock: If no direct trains or API fails, provide connecting routes
   const mockRoutes = [
     {
-      label: 'Option 1: via Vadodara',
+      label: 'Option 1: via Junction',
       reliability: 'High Reliability',
       totalDuration: '21h 50m',
       legs: [
-        { train: '12952 Rajdhani', from: from.split(' | ')[0] || 'Origin', to: 'Vadodara', time: '16:25 – 03:52' },
+        { train: '12952 Rajdhani', from: fromCode, to: 'Vadodara', time: '16:25 – 03:52' },
       ],
       layover: { station: 'Vadodara Jn', duration: '2h 15m' },
       legs2: [
-        { train: '16345 Netravati', from: 'Vadodara', to: to.split(' | ')[0] || 'Dest', time: '06:07 – 14:15' },
+        { train: '16345 Netravati', from: 'Vadodara', to: toCode, time: '06:07 – 14:15' },
       ],
     },
     {
-      label: 'Option 2: via Mumbai',
+      label: 'Option 2: via Hub',
       reliability: 'Standard',
       totalDuration: '28h 20m',
       legs: [
-        { train: '12952 Rajdhani', from: from.split(' | ')[0] || 'Origin', to: 'Mumbai Central', time: '16:25 – 08:35' },
+        { train: '12434 Rajdhani', from: fromCode, to: 'Nagpur', time: '15:35 – 05:10' },
       ],
-      layover: { station: 'Mumbai Central', duration: '4h 45m' },
+      layover: { station: 'Nagpur Jn', duration: '4h 45m' },
       legs2: [
-        { train: '16312 Kochuveli Exp', from: 'Mumbai Central', to: to.split(' | ')[0] || 'Dest', time: '13:20 – 16:40' },
+        { train: '12622 Tamil Nadu Exp', from: 'Nagpur', to: toCode, time: '13:20 – 16:40' },
       ],
     },
   ];
 
-  return res.json({ success: true, data: mockRoutes, isMock: true });
+  return res.json({ success: true, data: mockRoutes, isMock: true, note: 'Showing connecting routes — no direct trains found.' });
 };
 
 module.exports = { getTrainStatus, searchTrains, searchStations, getConnectingJourneys };
