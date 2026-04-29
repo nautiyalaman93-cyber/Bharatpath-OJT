@@ -36,29 +36,16 @@ export default function SeatExchange() {
   const [reqMessages, setReqMessages] = useState({});
   const [replyTo, setReplyTo] = useState(null); // { userId, userName, requestId }
 
-  const requests = hasSearched
-    ? allRequests.filter(req => req.trainNumber === trainNumber)
-    : [];
+  // All requests loaded on mount; trainNumber search is a client-side filter
+  const requests = trainNumber.trim()
+    ? allRequests.filter(req => req.trainNumber === trainNumber.trim())
+    : allRequests;
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    if (!trainNumber.trim()) return;
+    // Search is now a client-side filter — just set state; no API call needed
     setIsSearching(true);
-    setHasSearched(false);
-    setPostSuccess(false);
-    
-    setFetchLoading(true);
-    try {
-      const data = await seatService.getRequests(trainNumber);
-      setAllRequests(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFetchLoading(false);
-      setIsSearching(false);
-      setHasSearched(true);
-      setActiveTab('feed');
-    }
+    setTimeout(() => setIsSearching(false), 300); // micro-delay for UX
   };
 
   const fetchMyRequests = async () => {
@@ -81,6 +68,22 @@ export default function SeatExchange() {
     }
   };
 
+  // Load all open requests on mount so the feed is always populated
+  useEffect(() => {
+    const loadAll = async () => {
+      setFetchLoading(true);
+      try {
+        const data = await seatService.getRequests();
+        setAllRequests(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    loadAll();
+  }, []);
+
   useEffect(() => {
     if (activeTab === 'my') fetchMyRequests();
     if (activeTab === 'conversations') fetchMyConversations();
@@ -93,25 +96,55 @@ export default function SeatExchange() {
       return;
     }
     if (!myPnr || !mySeat) return;
-    
+
+    // Step 1: Get user's GPS coordinates (optional — enhances validation)
+    let userLat;
+    let userLng;
+    try {
+      await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            resolve();
+          },
+          () => {
+            // User denied or location unavailable — we continue without geo check
+            console.warn('Location access denied. Skipping proximity check.');
+            resolve();
+          },
+          { timeout: 5000 }
+        );
+      });
+    } catch (_) {
+      // ignore — geolocation is optional
+    }
+
+    // Step 2: Submit the request
     try {
       const coachValue = mySeat.split('|')[0]?.trim() || 'Unknown';
       await seatService.submitRequest({
+        pnr: myPnr,
         trainNumber,
         journeyDate: new Date().toISOString().split('T')[0],
         coach: coachValue,
         currentSeat: `${mySeat.trim()} (${myCurrentBerth})`,
-        wantedSeat: myTarget
+        wantedSeat: myTarget,
+        ...(userLat !== undefined && { userLat, userLng }),
       });
-      
+
       setPostSuccess(true);
       setMyPnr('');
       setMySeat('');
       setMyCurrentBerth('Lower Berth');
-      handleSearch();
+
+      // Refresh the feed after posting
+      const updated = await seatService.getRequests();
+      setAllRequests(updated);
       setTimeout(() => setPostSuccess(false), 3000);
     } catch (err) {
-      console.error('Failed to post swap request', err);
+      // Show the server's actual validation message (e.g. "Train mismatch" or "Too far from train")
+      alert(err.message || 'Failed to post swap request. Please try again.');
     }
   };
 
@@ -245,7 +278,7 @@ export default function SeatExchange() {
                     className={`search-tab ${activeTab === 'feed' ? 'active' : ''}`}
                     onClick={() => setActiveTab('feed')}
                   >
-                    Active Requests ({requests.length})
+                 Active Requests ({requests.length})
                   </button>
                   <button 
                     className={`search-tab ${activeTab === 'my' ? 'active' : ''}`}
@@ -262,11 +295,10 @@ export default function SeatExchange() {
                 </div>
 
                 {activeTab === 'feed' ? (
-                  !hasSearched ? (
+                  fetchLoading ? (
                     <div className="empty-state" style={{ textAlign: 'center', padding: '60px 20px', border: '1px dashed var(--border)', borderRadius: '16px', color: 'var(--text-muted)' }}>
-                      <Search size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-                      <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '8px' }}>Search for a Train</h3>
-                      <p>Enter a train number above to find open seat swap requests.</p>
+                      <RefreshCcw size={48} className="animate-spin" style={{ margin: '0 auto 16px', opacity: 0.5 }} />
+                      <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '8px' }}>Loading Requests...</h3>
                     </div>
                   ) : requests.length > 0 ? (
                     requests.map((req) => (

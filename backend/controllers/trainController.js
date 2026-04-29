@@ -3,8 +3,9 @@
  * @description Handles Live Train Status and Train Search.
  *
  * HOW IT WORKS:
- * - Same pattern as PNR: if API key is present → real API.
- * - If key is missing or API fails → return mock JSON.
+ * - Checks an in-memory cache first (5 minute TTL) to save API quota.
+ * - If cache miss → tries real API with key rotation.
+ * - If API fails → returns mock JSON.
  *
  * ROUTES HANDLED:
  * - GET /api/trains/status?number=12952&date=20241225  → Live Status
@@ -13,6 +14,36 @@
 
 const { fetchWithKeyRotation } = require('../services/apiService');
 const trainMock = require('../mock/trainMock.json');
+
+// -----------------------------------------------------------------------
+// In-Memory Cache (5 minute TTL)
+// Key format: 'status_{trainNo}_{date}' or 'search_{from}_{to}_{date}'
+// -----------------------------------------------------------------------
+const trainCache = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Retrieves a value from the cache if it exists and has not expired.
+ * @param {string} key
+ */
+const getCached = (key) => {
+  const entry = trainCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    trainCache.delete(key); // Remove stale entry
+    return null;
+  }
+  return entry.data;
+};
+
+/**
+ * Stores a value in the cache with a 5-min expiry.
+ * @param {string} key
+ * @param {*} data
+ */
+const setCache = (key, data) => {
+  trainCache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+};
 
 // -----------------------------------------------------------------------
 // @route   GET /api/trains/status
@@ -26,8 +57,18 @@ const getTrainStatus = async (req, res) => {
     return res.status(400).json({ message: 'Train number is required.' });
   }
 
+  // Check cache first
+  const cacheKey = `status_${number}_${date || 'today'}`;
+  const cached = getCached(cacheKey);
+  if (cached) {
+    console.log(`✅ Cache HIT for ${cacheKey}`);
+    return res.json({ success: true, data: cached, fromCache: true });
+  }
+
   try {
+    console.log(`🔄 Cache MISS for ${cacheKey} — calling API`);
     const data = await fetchWithKeyRotation(`/api/v1/liveTrainStatus?trainNo=${number}&startDay=1`);
+    setCache(cacheKey, data.data);
     return res.json({ success: true, data: data.data });
   } catch (error) {
     console.error('Train Status API Error:', error.message);
@@ -47,12 +88,21 @@ const searchTrains = async (req, res) => {
     return res.status(400).json({ message: 'Please provide from, to, and date query params.' });
   }
 
+  // Check cache first
+  const cacheKey = `search_${from}_${to}_${date}`;
+  const cached = getCached(cacheKey);
+  if (cached) {
+    console.log(`✅ Cache HIT for ${cacheKey}`);
+    return res.json({ success: true, data: cached, fromCache: true });
+  }
+
   try {
+    console.log(`🔄 Cache MISS for ${cacheKey} — calling API`);
     const data = await fetchWithKeyRotation(`/api/v3/trainBetweenStations?fromStationCode=${from}&toStationCode=${to}&dateOfJourney=${date}`);
+    setCache(cacheKey, data.data);
     return res.json({ success: true, data: data.data });
   } catch (error) {
     console.error('Train Search API Error:', error.message);
-    // Fallback to mock data when real API fails (same pattern as getTrainStatus)
     const mockTrains = [
       { trainNumber: '12952', trainName: 'Mumbai Rajdhani Express', departure: '16:55', arrival: '08:35', duration: '15h 40m', availableClasses: ['1A', '2A', '3A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
       { trainNumber: '12904', trainName: 'Golden Temple Mail', departure: '07:20', arrival: '05:05', duration: '21h 45m', availableClasses: ['SL', '3A', '2A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
@@ -99,8 +149,6 @@ const getConnectingJourneys = async (req, res) => {
     return res.status(400).json({ message: 'Please provide from and to query params.' });
   }
 
-  // Currently returns mock data for UI functionality
-  // In a real scenario, this would chain API calls to locate routes with layovers.
   const mockRoutes = [
     {
       label: 'Option 1: via Vadodara',

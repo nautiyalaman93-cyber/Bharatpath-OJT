@@ -5,22 +5,111 @@
 
 const SeatRequest = require('../models/SeatRequest');
 const Message = require('../models/Message');
+const { fetchWithKeyRotation } = require('../services/apiService');
+
+// -----------------------------------------------------------------------
+// Helper: Haversine formula to calculate distance between two GPS coords.
+// Returns distance in kilometers.
+// -----------------------------------------------------------------------
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
 // -----------------------------------------------------------------------
 // @route   POST /api/seats/request
 // @desc    Create a new seat swap request
 // @access  Protected
+//
+// VALIDATION FLOW:
+// 1. Validate PNR is real and belongs to the given trainNumber.
+// 2. If user sends their GPS coordinates, check proximity to train (≤50km).
+// 3. If all checks pass, create the SeatRequest.
 // -----------------------------------------------------------------------
 const createRequest = async (req, res) => {
-  const { trainNumber, journeyDate, coach, currentSeat, wantedSeat } = req.body;
+  const { pnr, trainNumber, coach, currentSeat, wantedSeat, userLat, userLng } = req.body;
 
-  if (!trainNumber || !journeyDate || !coach || !currentSeat || !wantedSeat) {
-    return res.status(400).json({ message: 'Please fill in all fields (trainNumber, journeyDate, coach, currentSeat, wantedSeat).' });
+  if (!pnr || !trainNumber || !coach || !currentSeat || !wantedSeat) {
+    return res.status(400).json({ message: 'Please fill in all required fields (pnr, trainNumber, coach, currentSeat, wantedSeat).' });
   }
 
+  // ----- Step 1: Validate PNR -----
+  let journeyDate = new Date().toISOString().split('T')[0]; // fallback to today
+  try {
+    const pnrData = await fetchWithKeyRotation(`/api/v3/getPNRStatus?pnrNumber=${pnr}`);
+    const pnrInfo = pnrData && pnrData.data ? pnrData.data : null;
+
+    if (!pnrInfo) {
+      return res.status(400).json({ message: 'Invalid PNR. Could not verify your booking.' });
+    }
+
+    // Check train number matches (API may return as string or number)
+    const pnrTrain = String(pnrInfo.trainNumber || pnrInfo.train_number || '').trim();
+    const reqTrain = String(trainNumber).trim();
+    if (pnrTrain && pnrTrain !== reqTrain) {
+      return res.status(400).json({
+        message: `PNR ${pnr} is for Train ${pnrTrain}, but you entered Train ${reqTrain}. Please check your details.`,
+      });
+    }
+
+    // Extract journey date from PNR if available
+    if (pnrInfo.dateOfJourney || pnrInfo.doj) {
+      journeyDate = pnrInfo.dateOfJourney || pnrInfo.doj;
+    }
+  } catch (pnrErr) {
+    // If PNR API is down, we still proceed but log the warning
+    console.warn('⚠️ PNR validation skipped — API unavailable:', pnrErr.message);
+  }
+
+  // ----- Step 2: Geolocation Proximity Check -----
+  // Only run if the frontend sent coordinates
+  if (userLat !== undefined && userLng !== undefined) {
+    try {
+      const trainStatusData = await fetchWithKeyRotation(`/api/v1/liveTrainStatus?trainNo=${trainNumber}&startDay=1`);
+      const trainInfo = trainStatusData && trainStatusData.data ? trainStatusData.data : null;
+
+      if (trainInfo) {
+        // Try to get train's current coordinates
+        // The IRCTC API returns currentStation with lat/lng in some versions
+        const trainLat = trainInfo.currentLat || trainInfo.lat || trainInfo.latitude;
+        const trainLng = trainInfo.currentLng || trainInfo.lng || trainInfo.longitude;
+
+        if (trainLat && trainLng) {
+          const distanceKm = haversineDistance(
+            parseFloat(userLat), parseFloat(userLng),
+            parseFloat(trainLat), parseFloat(trainLng)
+          );
+
+          console.log(`📍 User ↔ Train distance: ${distanceKm.toFixed(1)} km`);
+
+          // Threshold: user must be within 50 km of the train's current position
+          if (distanceKm > 50) {
+            return res.status(403).json({
+              message: `You appear to be ${Math.round(distanceKm)} km away from Train ${trainNumber}. Seat exchange is only allowed for passengers currently on the train.`,
+            });
+          }
+        } else {
+          // Train coordinates not available in API response — skip geo check
+          console.warn('⚠️ Train coordinates not found in Live Status API. Skipping geo check.');
+        }
+      }
+    } catch (geoErr) {
+      // If live status API fails, skip geo check (don't block the user)
+      console.warn('⚠️ Geo check skipped — Live Status API unavailable:', geoErr.message);
+    }
+  }
+
+  // ----- Step 3: Create the Seat Swap Request -----
   try {
     const newRequest = await SeatRequest.create({
-      user: req.user._id, // Use actual logged in user
+      user: req.user._id,
       trainNumber,
       journeyDate,
       coach,

@@ -63,19 +63,18 @@ export const seatService = {
   },
 
   submitRequest: async (data) => {
-    try {
-      const response = await fetch(`${BASE_URL}/api/seats/request`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Failed to submit seat request');
-      const responseData = await response.json();
-      return responseData.data;
-    } catch (error) {
-      console.error('Error submitting seat request:', error);
-      throw error;
+    // data may include: { pnr, trainNumber, coach, currentSeat, wantedSeat, userLat, userLng }
+    const response = await fetch(`${BASE_URL}/api/seats/request`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+      // Throw the server's error message so the UI can display it
+      throw new Error(responseData.message || 'Failed to submit seat request');
     }
+    return responseData.data;
   },
 
   // --- Messages ---

@@ -98,22 +98,20 @@ export default function PNRStatus() {
         <section className="max-w-[1000px] mx-auto px-4 space-y-6 anim-fade-up">
 
           {/* Train info card */}
-          <div
-            className="bp-card flex flex-col sm:flex-row items-center justify-between px-6 py-5"
-          >
+          <div className="bp-card flex flex-col sm:flex-row items-center justify-between px-6 py-5">
             <div className="anim-slide-left">
               <div className="flex items-center gap-3 mb-1.5">
                 <h2
                   className="text-[18px] font-bold"
                   style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}
                 >
-                  12952 Mumbai Rajdhani
+                  {statusData.trainNumber} {statusData.trainName}
                 </h2>
                 <span
                   className="text-[12px] font-bold px-2 py-0.5 rounded"
                   style={{ background: 'var(--bg-surface-2)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
                 >
-                  AC 3-Tier
+                  {statusData.class || 'N/A'}
                 </span>
               </div>
               <p
@@ -121,19 +119,22 @@ export default function PNRStatus() {
                 style={{ color: 'var(--text-secondary)' }}
               >
                 <span className="w-0.5 h-4 rounded-full" style={{ background: 'var(--primary)' }} />
-                NDLS (New Delhi) <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} /> MMCT (Mumbai Central)
+                {statusData.from} <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} /> {statusData.to}
+              </p>
+              <p className="text-[13px] mt-1" style={{ color: 'var(--text-muted)' }}>
+                Dept: {statusData.departureTime} &nbsp;|&nbsp; Arr: {statusData.arrivalTime} &nbsp;|&nbsp; {statusData.distance}
               </p>
             </div>
             <div
               className="flex items-center gap-2 mt-4 sm:mt-0 px-4 py-2 rounded-lg text-[14px] font-bold uppercase tracking-wide anim-scale-in anim-delay-2"
               style={{
-                background: 'var(--success-bg)',
-                color: 'var(--success)',
-                border: '1px solid var(--success)',
+                background: statusData.chartPrepared ? 'var(--success-bg)' : 'rgba(255,107,0,0.1)',
+                color: statusData.chartPrepared ? 'var(--success)' : 'var(--primary)',
+                border: `1px solid ${statusData.chartPrepared ? 'var(--success)' : 'var(--primary)'}`,
               }}
             >
-              <CheckCircle size={16} style={{ color: 'var(--success)' }} />
-              Chart Prepared
+              <CheckCircle size={16} />
+              {statusData.chartPrepared ? 'Chart Prepared' : 'Chart Not Prepared'}
             </div>
           </div>
 
@@ -144,7 +145,7 @@ export default function PNRStatus() {
               style={{ borderColor: 'var(--border)', background: 'var(--bg-surface-2)' }}
             >
               <h3 className="font-bold text-[15px]" style={{ color: 'var(--text-heading)' }}>
-                Passenger Information
+                Passenger Information ({statusData.passengers?.length || 0} passengers)
               </h3>
             </div>
 
@@ -158,17 +159,14 @@ export default function PNRStatus() {
                     <th className="px-5 py-3">Passenger</th>
                     <th className="px-5 py-3 text-center">Booking</th>
                     <th className="px-5 py-3 text-center">Current</th>
-                    <th className="px-5 py-3 text-right">Coach / Seat</th>
+                    <th className="px-5 py-3 text-right">Coach / Seat / Berth</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { book: 'CNF', check: 'CNF', location: 'B4 | 45 | Lower' },
-                    { book: 'CNF', check: 'CNF', location: 'B4 | 46 | Middle' }
-                  ].map((p, i) => (
+                  {(statusData.passengers || []).map((p, i) => (
                     <tr
                       key={i}
-                      className={`border-b last:border-0 transition-colors duration-200 anim-fade-up anim-delay-${i + 3}`}
+                      className={`border-b last:border-0 transition-colors duration-200 anim-fade-up anim-delay-${Math.min(i + 3, 6)}`}
                       style={{ borderColor: 'var(--border-light)' }}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -178,15 +176,28 @@ export default function PNRStatus() {
                           className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
                           style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}
                         >
-                          {i + 1}
+                          {p.serialNo || i + 1}
                         </div>
-                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Passenger {i + 1}</span>
+                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {p.name || `Passenger ${i + 1}`}
+                        </span>
                       </td>
-                      <td className="px-5 py-4 text-center" style={{ color: 'var(--text-secondary)' }}>{p.book}</td>
+                      <td className="px-5 py-4 text-center" style={{ color: 'var(--text-secondary)' }}>
+                        {p.bookingStatus || '—'}
+                      </td>
                       <td className="px-5 py-4 text-center">
-                        <span className="font-bold" style={{ color: 'var(--success)' }}>{p.check}</span>
+                        <span
+                          className="font-bold"
+                          style={{ color: p.currentStatus?.startsWith('CNF') ? 'var(--success)' : p.currentStatus?.startsWith('WL') ? '#f97316' : 'var(--text-primary)' }}
+                        >
+                          {p.currentStatus || '—'}
+                        </span>
                       </td>
-                      <td className="px-5 py-4 text-right font-bold" style={{ color: 'var(--text-primary)' }}>{p.location}</td>
+                      <td className="px-5 py-4 text-right font-bold" style={{ color: 'var(--text-primary)' }}>
+                        {p.coach && p.seatNumber
+                          ? `${p.coach} | ${p.seatNumber} | ${p.berth || '—'}`
+                          : p.currentStatus?.startsWith('WL') ? 'Waitlisted' : '—'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -195,6 +206,7 @@ export default function PNRStatus() {
           </div>
         </section>
       )}
+
 
       {/* ═══ Empty state when no results ═══ */}
       {!statusData && (
