@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-display: "Fraunces", serif;
 }
 
 /* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
@@ -9,54 +10,45 @@
    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 :root,
 [data-theme="light"] {
-  --bg-page:        #F5F2EE;
+  --bg-page:        #FAF9F6;
   --bg-surface:     #FFFFFF;
-  --bg-surface-2:   #F0EDE9;
+  --bg-surface-2:   #F3F2EE;
   --bg-sidebar:     #FFFFFF;
-  --bg-topbar:      rgba(255, 255, 255, 0.82);
+  --bg-topbar:      rgba(250, 249, 246, 0.8);
   --bg-footer:      #FFFFFF;
   --bg-card:        #FFFFFF;
-  --bg-input:       #FAFAF8;
-  --bg-hover:       #F0EDE9;
+  --bg-input:       #FDFDFB;
+  --bg-hover:       #F3F2EE;
   --bg-active:      #FFF4EC;
 
-  --primary:        #E05A00;
-  --primary-hover:  #C44F00;
-  --primary-light:  #FFF0E5;
-  --primary-glow:   rgba(224, 90, 0, 0.15);
-  --secondary:      #1E88E5;
-  --secondary-light:#E3F2FD;
+  --primary:        #D95100;
+  --primary-hover:  #BF4900;
+  --primary-light:  #FFF1E7;
+  --primary-glow:   rgba(217, 81, 0, 0.12);
+  --secondary:      #0F172A;
+  --secondary-light:#F1F5F9;
 
-  --text-primary:   #1A1612;
-  --text-secondary: #5C5247;
-  --text-muted:     #9A9088;
-  --text-heading:   #0F0D0B;
+  --text-primary:   #121212;
+  --text-secondary: #4A4A4A;
+  --text-muted:     #8E8E8E;
+  --text-heading:   #000000;
   --text-inverse:   #FFFFFF;
-  --text-brand:     #E05A00;
+  --text-brand:     #D95100;
 
-  --border:         #DDD8D2;
-  --border-light:   #EAE6E0;
-  --border-focus:   #E05A00;
+  --border:         #E5E3DF;
+  --border-light:   #F0EDE9;
+  --border-focus:   #D95100;
 
-  --danger:         #D32F2F;
-  --danger-bg:      #FFEBEE;
-  --danger-border:  #FFCDD2;
+  --shadow-sm:      0 2px 4px rgba(0,0,0,0.02);
+  --shadow-md:      0 8px 24px rgba(0,0,0,0.04);
+  --shadow-lg:      0 20px 48px rgba(0,0,0,0.06);
+  --shadow-primary: 0 4px 20px rgba(217,81,0,0.15);
 
-  --shadow-sm:      0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:      0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg:      0 12px 40px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-  --shadow-primary: 0 4px 16px rgba(224,90,0,0.25);
-
-  --nav-active-bg:  #E05A00;
+  --nav-active-bg:  #D95100;
   --nav-active-text:#FFFFFF;
-  --page-gradient:  linear-gradient(160deg, #FFF4EB 0%, #F5F2EE 30%, #F5F2EE 100%);
+  --page-gradient:  linear-gradient(to bottom, #FAF9F6, #F3F2EE);
 
-  --toggle-track:   #DDD8D2;
-  --toggle-thumb:   #FFFFFF;
-  --toggle-active:  #E05A00;
-
-  --success:        #16A34A;
-  --success-bg:     #F0FDF4;
+  --success:        #059669;
   --warning:        #D97706;
 }
 
@@ -64,57 +56,46 @@
    DARK THEME
    ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 [data-theme="dark"] {
-  --bg-page:        #0A0907;
-  --bg-surface:     #141210;
-  --bg-surface-2:   #1A1714;
-  --bg-sidebar:     #0F0D0B;
-  --bg-topbar:      rgba(10, 9, 7, 0.85);
-  --bg-footer:      #0F0D0B;
-  --bg-card:        #141210;
-  --bg-input:       #1A1714;
-  --bg-hover:       #1E1B18;
-  --bg-active:      #241B10;
+  --bg-page:        #050505;
+  --bg-surface:     #0D0D0D;
+  --bg-surface-2:   #151515;
+  --bg-sidebar:     #080808;
+  --bg-topbar:      rgba(5, 5, 5, 0.85);
+  --bg-footer:      #080808;
+  --bg-card:        #0D0D0D;
+  --bg-input:       #121212;
+  --bg-hover:       #1A1A1A;
+  --bg-active:      #261A0D;
 
-  --primary:        #FF8C42;
-  --primary-hover:  #FF7A28;
-  --primary-light:  #2A1A06;
-  --primary-glow:   rgba(255, 140, 66, 0.20);
-  --secondary:      #58A6FF;
-  --secondary-light:#0D2137;
+  --primary:        #FF7A00;
+  --primary-hover:  #E66E00;
+  --primary-light:  #1A1208;
+  --primary-glow:   rgba(255, 122, 0, 0.15);
+  --secondary:      #94A3B8;
+  --secondary-light:#1E293B;
 
-  --text-primary:   #E8DDD4;
-  --text-secondary: #A09080;
-  --text-muted:     #60504A;
-  --text-heading:   #F0E8DF;
-  --text-inverse:   #0A0907;
-  --text-brand:     #FF8C42;
+  --text-primary:   #EDEDED;
+  --text-secondary: #A1A1A1;
+  --text-muted:     #525252;
+  --text-heading:   #FFFFFF;
+  --text-inverse:   #050505;
+  --text-brand:     #FF7A00;
 
-  --border:         #2E2520;
-  --border-light:   #241E1A;
-  --border-focus:   #FF8C42;
+  --border:         #222222;
+  --border-light:   #1A1A1A;
+  --border-focus:   #FF7A00;
 
-  --danger:         #F85149;
-  --danger-bg:      #210D0D;
-  --danger-border:  #6E1A1A;
+  --shadow-sm:      0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md:      0 8px 24px rgba(0,0,0,0.5);
+  --shadow-lg:      0 20px 48px rgba(0,0,0,0.7);
+  --shadow-primary: 0 4px 20px rgba(255, 122, 0, 0.25);
 
-  --shadow-sm:      0 1px 3px rgba(0,0,0,0.40);
-  --shadow-md:      0 4px 16px rgba(0,0,0,0.50);
-  --shadow-lg:      0 12px 40px rgba(0,0,0,0.60);
-  --shadow-primary: 0 4px 20px rgba(255,140,66,0.30);
+  --nav-active-bg:  #FF7A00;
+  --nav-active-text:#050505;
+  --page-gradient:  radial-gradient(at top left, #121212, #050505);
 
-  --nav-active-bg:  #FF8C42;
-  --nav-active-text:#0A0907;
-  --page-gradient:  radial-gradient(ellipse at 20% 0%, rgba(255,140,66,0.06) 0%, transparent 50%),
-                    radial-gradient(ellipse at 80% 100%, rgba(88,166,255,0.04) 0%, transparent 50%),
-                    #0A0907;
-
-  --toggle-track:   #2E2520;
-  --toggle-thumb:   #E8DDD4;
-  --toggle-active:  #FF8C42;
-
-  --success:        #3FB950;
-  --success-bg:     #0D1F0D;
-  --warning:        #E3A91A;
+  --success:        #10B981;
+  --warning:        #F59E0B;
 }
 
 /* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
@@ -124,19 +105,20 @@
   html { scroll-behavior: smooth; }
 
   html, body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--page-gradient);
+    font-family: var(--font-sans);
+    background: var(--bg-page);
     color: var(--text-primary);
     margin: 0; padding: 0;
     min-height: 100vh;
+    letter-spacing: -0.011em;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Serif Display', serif;
+  h1, h2, h3, h4 {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.03em;
     color: var(--text-heading);
-    font-weight: 700;
   }
 }
 

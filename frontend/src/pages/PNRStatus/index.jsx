@@ -50,8 +50,8 @@ export default function PNRStatus() {
           <div className="text-center md:text-left anim-slide-left">
             <div className="bp-section-label mb-3"><Search size={11} /> PNR Lookup</div>
             <h1
-              className="text-2xl font-bold tracking-wide mb-1.5 flex items-center justify-center md:justify-start gap-2.5"
-              style={{ fontFamily: "'Poppins', sans-serif", color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
+              className="text-2xl font-extrabold tracking-tight mb-1.5 flex items-center justify-center md:justify-start gap-2.5"
+              style={{ color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
             >
               Check PNR Status
             </h1>

@@ -38,15 +38,12 @@ export default function Topbar() {
             <Train size={18} strokeWidth={2.5} />
           </div>
           <span
-            className="text-[19px] font-bold tracking-tight"
+            className="text-[20px] font-extrabold tracking-tighter"
             style={{
-              fontFamily: "'Poppins', sans-serif",
               color: 'var(--text-heading)',
-              letterSpacing: '-0.3px',
             }}
           >
-            Bharat
-            <span style={{ color: 'var(--primary)' }}>Path</span>
+            BHARAT<span style={{ color: 'var(--primary)' }}>PATH</span>
           </span>
         </Link>
 

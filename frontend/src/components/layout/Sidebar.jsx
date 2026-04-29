@@ -53,11 +53,12 @@ export default function Sidebar() {
         <h2
           style={{
             color: 'var(--primary)',
-            fontFamily: "'Poppins', sans-serif",
+            fontWeight: 800,
+            letterSpacing: '-0.04em'
           }}
-          className="text-xl font-bold tracking-wide"
+          className="text-xl"
         >
-          BharatPath
+          BHARATPATH
         </h2>
       </div>
 

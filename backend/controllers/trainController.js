@@ -72,7 +72,9 @@ const getTrainStatus = async (req, res) => {
     return res.json({ success: true, data: data.data });
   } catch (error) {
     console.error('Train Status API Error:', error.message);
-    return res.json({ success: true, data: trainMock, isMock: true, note: 'All API keys failed, showing mock data.' });
+    // Return specific mock if available, else first mock
+    const specificMock = trainMock[number] || Object.values(trainMock)[0];
+    return res.json({ success: true, data: specificMock, isMock: true, note: 'All API keys failed, showing mock data.' });
   }
 };
 
@@ -105,10 +107,10 @@ const searchTrains = async (req, res) => {
     console.error('Train Search API Error:', error.message);
     const mockTrains = [
       { trainNumber: '12952', trainName: 'Mumbai Rajdhani Express', departure: '16:55', arrival: '08:35', duration: '15h 40m', availableClasses: ['1A', '2A', '3A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
-      { trainNumber: '12904', trainName: 'Golden Temple Mail', departure: '07:20', arrival: '05:05', duration: '21h 45m', availableClasses: ['SL', '3A', '2A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
-      { trainNumber: '12926', trainName: 'Paschim Express', departure: '16:35', arrival: '14:55', duration: '22h 20m', availableClasses: ['SL', '3A', '2A', '1A'], runningDays: ['Mon','Wed','Fri','Sun'] },
-      { trainNumber: '19019', trainName: 'Dehradun Express', departure: '21:30', arrival: '18:45', duration: '21h 15m', availableClasses: ['SL', '3A'], runningDays: ['Tue','Thu','Sat'] },
-      { trainNumber: '12138', trainName: 'Punjab Mail', departure: '19:45', arrival: '17:00', duration: '21h 15m', availableClasses: ['SL', '3A', '2A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+      { trainNumber: '12002', trainName: 'New Delhi Shatabdi', departure: '06:00', arrival: '10:45', duration: '4h 45m', availableClasses: ['CC', 'EC'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+      { trainNumber: '12622', trainName: 'Tamil Nadu Express', departure: '21:05', arrival: '06:15', duration: '33h 10m', availableClasses: ['SL', '3A', '2A', '1A'], runningDays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+      { trainNumber: '12050', trainName: 'Gatimaan Express', departure: '08:10', arrival: '09:50', duration: '1h 40m', availableClasses: ['CC', 'EC'], runningDays: ['Mon','Tue','Wed','Thu','Sat','Sun'] },
+      { trainNumber: '12434', trainName: 'Chennai Rajdhani', departure: '15:35', arrival: '20:45', duration: '29h 10m', availableClasses: ['1A', '2A', '3A'], runningDays: ['Wed','Fri'] },
     ];
     return res.json({ success: true, data: mockTrains, isMock: true, note: 'Showing sample data — live API temporarily unavailable.' });
   }

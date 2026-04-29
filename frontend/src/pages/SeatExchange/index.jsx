@@ -231,8 +231,8 @@ export default function SeatExchange() {
           <div className="text-center md:text-left anim-slide-left">
             <div className="bp-section-label mb-3"><ArrowRightLeft size={11} /> P2P Exchange</div>
             <h1
-              className="text-2xl font-bold mb-1.5"
-              style={{ fontFamily: "'Poppins', sans-serif", color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
+              className="text-2xl font-extrabold tracking-tight mb-1.5"
+              style={{ color: isDark ? '#FFFFFF' : 'var(--text-heading)' }}
             >
               Seat Swap Exchange
             </h1>
@@ -247,9 +247,9 @@ export default function SeatExchange() {
               { label: 'Active Requests', value: allRequests.length },
               { label: 'Open Today', value: allRequests.filter(r => new Date(r.createdAt).toDateString() === new Date().toDateString()).length },
             ].map((s, i) => (
-              <div key={i} className="text-center px-5 py-3 rounded-xl" style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(224,90,0,0.06)', border: '1px solid var(--border)' }}>
-                <div className="text-[22px] font-extrabold" style={{ color: 'var(--primary)', fontFamily: "'Poppins', sans-serif" }}>{s.value}</div>
-                <div className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: isDark ? 'rgba(232,221,212,0.50)' : 'var(--text-muted)' }}>{s.label}</div>
+              <div key={i} className="text-center px-5 py-3 rounded-lg" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: '1px solid var(--border)' }}>
+                <div className="text-[22px] font-black tracking-tighter" style={{ color: 'var(--primary)' }}>{s.value}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest opacity-50" style={{ color: 'var(--text-muted)' }}>{s.label}</div>
               </div>
             ))}
           </div>

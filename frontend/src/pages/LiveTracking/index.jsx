@@ -1,34 +1,40 @@
 /**
  * @file index.jsx (Live Tracking Page)
- * @description Theme-aware live tracking board with timeline animation.
+ * @description Theme-aware live tracking board with real API integration.
  */
 
-import { useState } from 'react';
-import { Train as TrainIcon, Clock, Activity, MapPin, Gauge, Navigation } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Train as TrainIcon, Clock, Activity, MapPin, Gauge, Navigation, AlertCircle } from 'lucide-react';
+import { api } from '../../services/api';
 
 export default function LiveTracking() {
   const [trainNumber, setTrainNumber] = useState('12952');
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [trainData, setTrainData] = useState(null);
+  const [error, setError] = useState(null);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
     setIsSearching(true);
-    setTimeout(() => {
+    setError(null);
+    try {
+      // API expects YYYYMMDD
+      const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+      const data = await api.getTrainStatus(trainNumber, today);
+      if (data) {
+        setTrainData(data);
+        setHasSearched(true);
+      } else {
+        setError('Train data not found. Please check the train number.');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch train status. Please try again later.');
+    } finally {
       setIsSearching(false);
-      setHasSearched(true);
-    }, 800);
+    }
   };
-
-  const routeStations = [
-    { name: 'New Delhi (NDLS)',      time: '16:25', status: 'Departed',     active: false, passed: true },
-    { name: 'Kota Jn (KOTA)',       time: '21:00', status: 'Departed',     active: false, passed: true },
-    { name: 'Ratlam Jn (RTM)',      time: '00:15', status: 'Departed',     active: false, passed: true },
-    { name: 'Vadodara Jn (BRC)',    time: '03:52', status: 'Arriving Now', active: true,  passed: false },
-    { name: 'Surat (ST)',           time: '05:43', status: 'Expected',     active: false, passed: false },
-    { name: 'Borivali (BVI)',       time: '08:40', status: 'Expected',     active: false, passed: false },
-    { name: 'Mumbai Central (MMCT)',time: '09:35', status: 'Destination',  active: false, passed: false },
-  ];
 
   return (
     <div className="w-full pb-16 min-h-screen" style={{ background: 'var(--bg-page)' }}>
@@ -82,8 +88,18 @@ export default function LiveTracking() {
         </div>
       </section>
 
+      {/* ═══ Error State ═══ */}
+      {error && (
+        <div className="max-w-[1000px] mx-auto px-4 mb-6">
+          <div className="p-4 rounded-xl flex items-center gap-3 bg-red-50 border border-red-100 text-red-600 text-[14px] font-medium">
+            <AlertCircle size={18} />
+            {error}
+          </div>
+        </div>
+      )}
+
       {/* ═══ Results ═══ */}
-      {hasSearched && (
+      {hasSearched && trainData && (
         <section className="max-w-[1000px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6 anim-fade-up">
 
           {/* Timeline */}
@@ -103,60 +119,69 @@ export default function LiveTracking() {
                 className="absolute top-8 bottom-8 left-[35px] w-[3px] rounded-full"
                 style={{ background: 'var(--border)' }}
               />
+              
+              {/* Progress fill */}
               <div
-                className="absolute top-8 left-[35px] w-[3px] rounded-full z-0"
-                style={{ background: 'var(--success)', height: '50%' }}
+                className="absolute top-8 left-[35px] w-[3px] rounded-full z-0 transition-all duration-1000"
+                style={{ 
+                  background: 'var(--success)', 
+                  height: trainData.route ? `${(trainData.route.filter(s => s.status === 'departed' || s.status === 'current').length / trainData.route.length) * 100}%` : '0%'
+                }}
               />
 
-              {routeStations.map((station, idx) => (
-                <div
-                  key={idx}
-                  className={`relative z-10 flex gap-5 items-center mb-6 last:mb-0 anim-fade-up anim-delay-${Math.min(idx + 1, 6)}`}
-                >
-                  {/* Node */}
-                  <div
-                    className="w-[22px] h-[22px] rounded-full border-[3px] flex items-center justify-center flex-shrink-0"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      borderColor: station.active ? 'var(--primary)' : station.passed ? 'var(--success)' : 'var(--border)',
-                      boxShadow: station.active ? '0 0 0 4px var(--primary-glow)' : 'none',
-                    }}
-                  >
-                    {station.active && (
-                      <div className="w-[10px] h-[10px] rounded-full" style={{ background: 'var(--primary)' }} />
-                    )}
-                  </div>
+              {trainData.route && trainData.route.map((station, idx) => {
+                const isPassed = station.status === 'departed';
+                const isCurrent = station.status === 'current';
 
-                  {/* Station card */}
+                return (
                   <div
-                    className="flex-1 rounded-xl px-4 py-3 flex justify-between items-center transition-colors duration-200"
-                    style={{
-                      background: station.active ? 'var(--primary-light)' : 'var(--bg-surface-2)',
-                      border: station.active ? '1px solid var(--primary)' : '1px solid var(--border-light)',
-                    }}
-                    onMouseEnter={(e) => { if (!station.active) e.currentTarget.style.borderColor = 'var(--primary)'; }}
-                    onMouseLeave={(e) => { if (!station.active) e.currentTarget.style.borderColor = 'var(--border-light)'; }}
+                    key={idx}
+                    className={`relative z-10 flex gap-5 items-center mb-6 last:mb-0 anim-fade-up anim-delay-${Math.min(idx + 1, 6)}`}
                   >
-                    <div>
+                    {/* Node */}
+                    <div
+                      className="w-[22px] h-[22px] rounded-full border-[3px] flex items-center justify-center flex-shrink-0"
+                      style={{
+                        background: 'var(--bg-surface)',
+                        borderColor: isCurrent ? 'var(--primary)' : isPassed ? 'var(--success)' : 'var(--border)',
+                        boxShadow: isCurrent ? '0 0 0 4px var(--primary-glow)' : 'none',
+                      }}
+                    >
+                      {isCurrent && (
+                        <div className="w-[10px] h-[10px] rounded-full" style={{ background: 'var(--primary)' }} />
+                      )}
+                    </div>
+
+                    {/* Station card */}
+                    <div
+                      className="flex-1 rounded-xl px-4 py-3 flex justify-between items-center transition-colors duration-200"
+                      style={{
+                        background: isCurrent ? 'var(--primary-light)' : 'var(--bg-surface-2)',
+                        border: isCurrent ? '1px solid var(--primary)' : '1px solid var(--border-light)',
+                      }}
+                    >
+                      <div>
+                        <p
+                          className="font-semibold text-[14px]"
+                          style={{ color: isCurrent ? 'var(--primary)' : 'var(--text-primary)' }}
+                        >
+                          {station.stationName} ({station.stationCode})
+                        </p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                          {station.status === 'departed' ? 'Departed' : station.status === 'current' ? 'At Station' : 'Upcoming'}
+                          {station.delay > 0 && <span className="ml-2" style={{ color: '#D97706' }}>({station.delay}m delay)</span>}
+                        </p>
+                      </div>
                       <p
-                        className="font-semibold text-[14px]"
-                        style={{ color: station.active ? 'var(--primary)' : 'var(--text-primary)' }}
+                        className="text-[14px] font-bold"
+                        style={{ color: isCurrent ? 'var(--primary)' : 'var(--text-secondary)' }}
                       >
-                        {station.name}
-                      </p>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                        {station.status}
+                        {station.actualArrival || station.scheduledArrival}
                       </p>
                     </div>
-                    <p
-                      className="text-[14px] font-bold"
-                      style={{ color: station.active ? 'var(--primary)' : 'var(--text-secondary)' }}
-                    >
-                      {station.time}
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -165,14 +190,13 @@ export default function LiveTracking() {
             {/* Train info */}
             <div className="bp-card p-5 text-center anim-scale-in anim-delay-1">
               <p className="text-[11px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>
-                12952 MUMBAI RAJDHANI
+                {trainData.trainNumber} {trainData.trainName}
               </p>
               <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-heading)', fontFamily: "'Poppins', sans-serif" }}>
-                Vadodara Jn
+                {trainData.currentStationName || 'Tracking...'}
               </h3>
 
               <div className="grid grid-cols-2 gap-3 text-left">
-                {/* Speed */}
                 <div
                   className="p-3.5 rounded-xl"
                   style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-light)' }}
@@ -181,18 +205,17 @@ export default function LiveTracking() {
                     <Gauge size={12} style={{ color: 'var(--primary)' }} />
                     <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>Speed</p>
                   </div>
-                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>112 km/h</p>
+                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>{trainData.speed || '0'} km/h</p>
                 </div>
-                {/* Distance */}
                 <div
                   className="p-3.5 rounded-xl"
                   style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-light)' }}
                 >
                   <div className="flex items-center gap-1.5 mb-1">
                     <MapPin size={12} style={{ color: 'var(--secondary)' }} />
-                    <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>Remaining</p>
+                    <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>Delay</p>
                   </div>
-                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>392 km</p>
+                  <p className="text-lg font-bold" style={{ color: 'var(--text-heading)' }}>{trainData.delay || '0'} m</p>
                 </div>
               </div>
             </div>
@@ -200,14 +223,18 @@ export default function LiveTracking() {
             {/* Punctuality + delay */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bp-card p-4 text-center anim-scale-in anim-delay-2">
-                <Clock size={20} style={{ color: 'var(--success)' }} className="mx-auto mb-1.5" />
-                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Punctuality</p>
-                <p className="text-[14px] font-bold mt-0.5" style={{ color: 'var(--success)' }}>On Time</p>
+                <Clock size={20} style={{ color: trainData.delay > 0 ? '#D97706' : '#10B981' }} className="mx-auto mb-1.5" />
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Status</p>
+                <p className="text-[14px] font-bold mt-0.5" style={{ color: trainData.delay > 0 ? '#D97706' : '#10B981' }}>
+                  {trainData.delay > 0 ? 'Delayed' : 'On Time'}
+                </p>
               </div>
               <div className="bp-card p-4 text-center anim-scale-in anim-delay-3">
-                <Activity size={20} style={{ color: 'var(--warning)' }} className="mx-auto mb-1.5" />
-                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Delay</p>
-                <p className="text-[14px] font-bold mt-0.5" style={{ color: 'var(--warning)' }}>25 Mins</p>
+                <Activity size={20} style={{ color: 'var(--primary)' }} className="mx-auto mb-1.5" />
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Last Updated</p>
+                <p className="text-[14px] font-bold mt-0.5" style={{ color: 'var(--text-heading)' }}>
+                  {trainData.lastUpdated ? new Date(trainData.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}
+                </p>
               </div>
             </div>
           </div>
@@ -215,7 +242,7 @@ export default function LiveTracking() {
       )}
 
       {/* Empty state */}
-      {!hasSearched && (
+      {!hasSearched && !isSearching && (
         <div className="max-w-[500px] mx-auto text-center py-20 px-4 anim-fade-up anim-delay-2">
           <div
             className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
@@ -232,6 +259,14 @@ export default function LiveTracking() {
           <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>
             Enter the train number above to see real-time route progress, speed, and delay metrics.
           </p>
+        </div>
+      )}
+
+      {/* Loading state */}
+      {isSearching && (
+        <div className="max-w-[500px] mx-auto text-center py-20 px-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[14px] font-bold" style={{ color: 'var(--text-secondary)' }}>Fetching live telemetry...</p>
         </div>
       )}
     </div>

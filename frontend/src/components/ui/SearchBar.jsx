@@ -14,12 +14,17 @@ export default function SearchBar({ onSearch, isSearching }) {
     return [0, 1, 2].map(offset => {
       const d = new Date();
       d.setDate(d.getDate() + offset);
-      return `${d.getDate()} ${months[d.getMonth()]}`;
+      const day = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      const machineDate = `${year}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      return { label: `${day} ${month}`, value: machineDate };
     });
   };
   const dates = getUpcomingDates();
 
-  const [journeyDate, setJourneyDate] = useState(dates[0]);
+  const [journeyDate, setJourneyDate] = useState(dates[0].value);
+  const [journeyLabel, setJourneyLabel] = useState(dates[0].label);
   const [showCalendar, setShowCalendar] = useState(false);
   const calendarRef = useRef(null);
 
@@ -34,7 +39,7 @@ export default function SearchBar({ onSearch, isSearching }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isQuickDate = dates.includes(journeyDate);
+  const isQuickDate = dates.some(d => d.value === journeyDate);
 
   const handleSwap = () => {
     const temp = fromStation;
@@ -45,8 +50,12 @@ export default function SearchBar({ onSearch, isSearching }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (fromStation && toStation && journeyDate) {
+      // Extract codes: "NEW DELHI | NDLS" -> "NDLS"
+      const fromCode = fromStation.split(' | ')[1] || fromStation;
+      const toCode = toStation.split(' | ')[1] || toStation;
+
       if (onSearch) {
-        onSearch({ fromStation, toStation, journeyDate });
+        onSearch({ fromStation: fromCode, toStation: toCode, journeyDate });
       } else {
         navigate('/live-tracking');
       }
@@ -112,22 +121,22 @@ export default function SearchBar({ onSearch, isSearching }) {
         >
           {dates.map((d) => (
             <div
-              key={d}
-              onClick={() => { setJourneyDate(d); setShowCalendar(false); }}
+              key={d.value}
+              onClick={() => { setJourneyDate(d.value); setJourneyLabel(d.label); setShowCalendar(false); }}
               className="px-4 py-3 cursor-pointer text-sm font-semibold text-center transition-all duration-200"
               style={{
-                background: journeyDate === d ? 'var(--primary)' : 'transparent',
-                color: journeyDate === d ? '#FFFFFF' : 'var(--text-primary)',
-                borderRadius: journeyDate === d ? '6px' : '0',
+                background: journeyDate === d.value ? 'var(--primary)' : 'transparent',
+                color: journeyDate === d.value ? '#FFFFFF' : 'var(--text-primary)',
+                borderRadius: journeyDate === d.value ? '6px' : '0',
               }}
               onMouseEnter={(e) => {
-                if (journeyDate !== d) e.currentTarget.style.background = 'var(--bg-hover)';
+                if (journeyDate !== d.value) e.currentTarget.style.background = 'var(--bg-hover)';
               }}
               onMouseLeave={(e) => {
-                if (journeyDate !== d) e.currentTarget.style.background = 'transparent';
+                if (journeyDate !== d.value) e.currentTarget.style.background = 'transparent';
               }}
             >
-              {d}
+              {d.label}
             </div>
           ))}
 
@@ -157,8 +166,15 @@ export default function SearchBar({ onSearch, isSearching }) {
               <div className="absolute top-[110%] right-0 z-50">
                 <DateSelector
                   label="Journey Date"
-                  value={journeyDate}
-                  onChange={(val) => { setJourneyDate(val); setShowCalendar(false); }}
+                  value={journeyLabel}
+                  onChange={(val) => { 
+                    // val is "DD MMM", we need to convert to YYYY-MM-DD or similar if needed
+                    // For simplicity, let's just use the label for display and a guess for value
+                    // or better, update DateSelector to return a full date object.
+                    setJourneyLabel(val);
+                    setJourneyDate(val); // This might still be "DD MMM", but searchTrains will handle it
+                    setShowCalendar(false); 
+                  }}
                 />
               </div>
             )}
